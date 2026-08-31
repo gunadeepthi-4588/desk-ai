@@ -6,11 +6,21 @@ from backend.services.retrieval import RetrievalService
 class RAGService:
     def __init__(self, retrieval_service: RetrievalService = None):
         self.retrieval_service = retrieval_service or RetrievalService()
-        self.client = genai.Client() # Reads GEMINI_API_KEY from os.environ
+        self.client = None  # Lazy client, will be created on first call
         # Default generative model
         self.model_name = os.environ.get("GEMINI_GENERATIVE_MODEL", "gemini-3.5-flash")
 
+    def _ensure_client(self):
+        """Create genai.Client if not already created. Raises clear error if API key missing."""
+        if self.client is None:
+            try:
+                self.client = genai.Client()
+            except Exception as e:
+                raise RuntimeError("Google Gemini API client could not be created. Ensure GEMINI_API_KEY is set.")
+
     def answer_question(self, question: str) -> dict:
+        """Answer a question using retrieval+Gemini."""
+        self._ensure_client()
         """
         Retrieves relevant company knowledge chunks, checks thresholds,
         calls Gemini using system instructions with temperature=0.0, and returns answer + sources.
