@@ -1,0 +1,31 @@
+# Phishing Awareness and Protection Guidance
+
+This document provides instructions on how to recognize, avoid, and report phishing attempts and other social engineering attacks.
+
+## What is Phishing?
+Phishing is a method where attackers send fraudulent communications designed to look like they come from a reputable source, such as a vendor, bank, or internal department. The goal is to steal sensitive data (like login credentials or financial information) or to install malware on your system.
+
+## Key Indicators of a Phishing Email
+Be suspicious of emails containing any of the following elements:
+
+1. **Urgent or Threatening Language**:
+   - Attackers often create a false sense of urgency (e.g., "Account suspended immediately," "Action required within 24 hours").
+
+2. **Generic Greetings**:
+   - Standard greetings like "Dear Customer" or "Dear Employee" rather than your name.
+
+3. **Mismatched Sender Address**:
+   - Check the actual email address in the "From" header, not just the display name. For example, a display name of "IT Support" coming from `itsupport@external-domain-xyz.com` instead of the corporate domain.
+
+4. **Suspicious Links or Attachments**:
+   - Hover over links to inspect the actual destination URL before clicking.
+   - Be cautious of unsolicited attachments, especially file types like `.exe`, `.scr`, `.zip`, or documents prompting you to enable macros.
+
+5. **Requests for Sensitive Information**:
+   - Authentic internal teams or service providers will never ask for your password, social security number, or personal details via email.
+
+## How to Protect Yourself
+* **Never reveal passwords**: Keep credentials secure and do not share them.
+* **Do not use work email for personal services**: This reduces spam and exposure to external breaches.
+* **Use bookmarks**: Access critical systems via bookmarked URLs rather than clicking links in unsolicited emails.
+* **Keep software updated**: Install system updates and patches promptly.

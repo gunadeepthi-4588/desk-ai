@@ -1,0 +1,27 @@
+# Purchase Order and Invoice Processing Guide
+
+This document details the procurement process, including creating purchase orders (POs) and submitting vendor invoices for payment.
+
+## Purchase Order (PO) Creation
+A Purchase Order must be approved and issued before purchasing goods or services exceeding **$1,000**:
+
+1. **Submit Request**: Log in to the purchasing system and complete a purchase requisition form. Specify the vendor details, item descriptions, quantities, and cost center.
+2. **Review & Approval**:
+   - Requisitions up to $5,000: Approved by the department manager.
+   - Requisitions over $5,000: Approved by the department VP.
+3. **PO Issuance**: Once approved, the system generates a PO number and emails the Purchase Order to the vendor.
+
+## Invoice Submission and Processing
+When a vendor invoice is received, follow these steps to ensure timely payment:
+
+1. **Verify the Invoice**:
+   - Confirm that the goods or services have been received or completed satisfactorily.
+   - Verify that the invoice references the correct corporate PO number (required for invoices over $1,000).
+
+2. **Submit to Accounts Payable**:
+   - Email the PDF invoice to `ap@generic-enterprise.com` or upload it directly through the procurement system portal.
+   - The invoice must include the vendor's billing address, tax identification number, and bank routing info.
+
+3. **Processing and Payment Terms**:
+   - Standard payment terms are **Net 30** (payment is made 30 days from the invoice receipt date).
+   - Invoices without a valid PO number (where required) will be held and returned to the department for matching, which will delay processing.

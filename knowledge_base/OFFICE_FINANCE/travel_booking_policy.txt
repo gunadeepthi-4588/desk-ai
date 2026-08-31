@@ -1,0 +1,20 @@
+# Corporate Travel Booking Policy
+
+This document outlines the guidelines and approvals required for booking business-related travel.
+
+## Booking Channels and Tools
+* **Preferred Tool**: All business flights, hotel accommodations, and car rentals must be booked through the company's preferred online booking tool at `https://travel.generic-enterprise.com`.
+* **Direct Bookings**: Direct booking with airlines or hotels is not permitted unless the travel destination is not serviced by the corporate booking tool or pre-approved by the travel desk.
+
+## Approval Guidelines
+
+1. **Domestic Travel**:
+   - Must be submitted and approved by your direct manager at least 14 days prior to departure.
+
+2. **International Travel**:
+   - Must be submitted and approved by your department VP at least 30 days prior to departure.
+
+3. **Booking Class**:
+   - **Air Travel**: Economy class is required for all flights under 6 hours. Business class may be requested only for continuous flights exceeding 6 hours with VP approval.
+   - **Lodging**: Standard single room at preferred partner hotels. Room rates must comply with standard city-level budget caps.
+   - **Car Rental**: Mid-size or compact car booking only. GPS and additional insurance options should be declined (covered by corporate credit card/policy).

@@ -1,0 +1,34 @@
+# Expense Reimbursement Procedure
+
+This document outlines the guidelines and procedures for submitting business expenses for reimbursement.
+
+## Eligible Expenses
+
+### 1. Business Travel Meals
+* Meals are reimbursed on an actual expense basis up to a daily limit of **$75.00**.
+* Alcohol is not eligible for reimbursement unless pre-approved for client entertainment events.
+* Itemized receipts are required for all meal claims. Summary credit card slips are not accepted.
+
+### 2. Client Entertainment
+* Reimbursed only when client names, company name, and business purpose are clearly documented.
+* Must be approved by a department VP.
+
+### 3. Local Travel and Mileage
+* Mileage for business travel using personal vehicles is reimbursed at the standard government rate.
+* Tolls and public transport expenses are reimbursable with receipt evidence.
+* Standard daily commuting costs (home to office) are not reimbursable.
+
+## Submission and Approval Process
+
+1. **Submit Expense Report**:
+   - Log in to the finance portal at `https://finance.generic-enterprise.com`.
+   - Create a new expense report and fill in the merchant, date, amount, and business purpose for each line item.
+   - Attach digital copies or scans of itemized receipts.
+
+2. **Submission Deadline**:
+   - Expense reports must be submitted within 30 days of incurring the expense. Late submissions may be rejected.
+
+3. **Approval Flow**:
+   - Reports under $500 are routed to your direct manager.
+   - Reports $500 and above require additional approval from the department head.
+   - Once approved by the manager/department head, the Finance team audits the report. Approved payments are processed via direct deposit within 7–10 business days.

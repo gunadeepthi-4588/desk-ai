@@ -1,0 +1,37 @@
+# Employee Leave Policy
+
+This document defines the types of leave available to employees and the procedures for requesting time off.
+
+## Types of Leave
+
+### 1. Annual Leave (Vacation)
+* Full-time employees accrue annual leave at a rate of 20 days per calendar year.
+* Accrual occurs monthly (1.67 days per month).
+* A maximum of 5 unused annual leave days can be carried over to the following calendar year. Any additional unused days beyond 5 will be forfeited on December 31st.
+
+### 2. Sick Leave
+* Employees receive 10 paid sick leave days per year, allotted on January 1st (or pro-rated for mid-year starts).
+* Sick leave is intended for personal illness or medical appointments.
+* Medical certification is required for sick leave absences exceeding 3 consecutive business days.
+* Sick leave days do not carry over to the next year and are not paid out upon separation.
+
+### 3. Bereavement Leave
+* Paid bereavement leave is available in the event of the death of an immediate family member:
+  - Spouse, child, or parent: Up to 5 consecutive business days.
+  - Sibling or grandparent: Up to 3 consecutive business days.
+
+## Request and Approval Process
+
+To request leave, follow these steps:
+
+1. **Submit Request in HR Portal**:
+   - Log in to the HR Self-Service portal at `https://hr.generic-enterprise.com`.
+   - Select the leave type and enter the start and end dates.
+   - For planned vacation, requests must be submitted at least 2 weeks in advance.
+
+2. **Manager Approval**:
+   - The system will route the request to your manager.
+   - Managers will review based on department coverage and projects, and approve or decline.
+
+3. **Calendar Update**:
+   - Once approved, set your Out-of-Office (OOO) calendar event and set up auto-reply messages in email and chat.

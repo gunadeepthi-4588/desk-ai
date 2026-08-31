@@ -1,0 +1,22 @@
+# New Employee Onboarding Checklist
+
+This checklist guides new hires through their first two weeks of onboarding.
+
+## Day One: Welcome and Orientation
+* [ ] **Welcome Session**: Attend the HR welcome presentation at 9:00 AM.
+* [ ] **Hardware Setup**: Collect your laptop and peripheral devices from the IT desk.
+* [ ] **Account Activation**: Follow the instructions to sign in to your corporate account and configure your permanent password.
+* [ ] **MFA Setup**: Configure Multi-Factor Authentication on your mobile device.
+* [ ] **Onboarding Buddy**: Meet your assigned onboarding buddy for a team tour.
+
+## Week One: Core Setup
+* [ ] **Compliance Training**: Complete the mandatory Cyber Security Awareness and Code of Conduct courses in the learning portal.
+* [ ] **Direct Deposit**: Enter your direct deposit bank information in the HR Portal.
+* [ ] **Emergency Contact**: Fill out emergency contact details in your employee profile.
+* [ ] **VPN and Wi-Fi Configuration**: Configure remote VPN access and verify connection to the corporate Wi-Fi network on your corporate laptop.
+
+## Week Two: Departmental Integration
+* [ ] **Team Introduction**: Attend introductory meetings with key team members and project stakeholders.
+* [ ] **Set Goals**: Work with your manager to establish initial 30-60-90 day performance goals.
+* [ ] **Review Department Docs**: Read through team repositories, wiki guides, and standard operating procedures.
+* [ ] **First Check-in**: Schedule a one-on-one check-in meeting with your manager to discuss onboarding progress.

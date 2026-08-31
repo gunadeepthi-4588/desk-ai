@@ -1,0 +1,35 @@
+# Cybersecurity Incident Reporting Procedures
+
+This document describes how and when employees must report suspected cybersecurity incidents or anomalies.
+
+## What is a Security Incident?
+A security incident is any event that threatens the confidentiality, integrity, or availability of corporate systems or data. Examples include:
+* Active phishing attempts or clicking on a suspected phishing link.
+* Unexplained system behavior or signs of unauthorized access (e.g., cursor moving independently, unauthorized password changes).
+* Loss or theft of a corporate-managed device (laptop, phone).
+* Unauthorized disclosure or leaks of sensitive documents or data.
+* Finding unauthorized physical devices connected to the network or workstations.
+
+## Reporting Steps
+
+If you suspect or identify a security incident, execute the following steps immediately:
+
+1. **Do Not Attempt to Investigate**:
+   - Do not attempt to clean infected systems or run unauthorized scanners yourself.
+   - Do not shut down the device unless specifically instructed by Security (restarting or shutting down can destroy volatile evidence in memory). Simply disconnect from Wi-Fi or unplug the network cable if malware is active.
+
+2. **Notify the Security Operations Center (SOC)**:
+   - Email: Send details to `security-report@generic-enterprise.com`.
+   - Hotline: Call the Security Incident line at extension 9110.
+   - Portal: Submit an "Incident Report" ticket on the support homepage.
+
+3. **Provide Critical Details**:
+   - Include a description of what occurred or what was observed.
+   - Date and time of the occurrence.
+   - Hostname of the affected device (found on the asset tag sticker).
+   - Any screenshots of error messages, phishing emails, or suspicious activities.
+
+## Post-Report Guidance
+* Follow instructions provided by the security response team.
+* Keep the incident confidential to prevent tip-offs if an active compromise is investigated.
+* Coordinate with the IT team for device isolation or replacement if requested.

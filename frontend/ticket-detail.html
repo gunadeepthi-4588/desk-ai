@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticket Details - DeskAI</title>
+  <meta name="description" content="View full details of a support ticket raised through DeskAI.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="tickets.css">
+  <link rel="stylesheet" href="ticket-detail.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <a href="/" class="brand" title="DeskAI Dashboard">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>DeskAI</h1>
+          <span class="sub-brand">Employee Assistant</span>
+        </div>
+      </a>
+      <nav class="header-nav">
+        <a href="/" class="nav-link" id="nav-dashboard">🏠 Dashboard</a>
+        <a href="/chat" class="nav-link" id="nav-chat">💬 Ask DeskAI</a>
+        <a href="/tickets" class="nav-link active" id="nav-my-tickets">🎫 My Tickets</a>
+      </nav>
+      <div class="user-nav">
+        <span class="user-badge" id="user-display">👤 User</span>
+        <button type="button" class="logout-btn" id="logout-btn" title="Sign out">Logout</button>
+      </div>
+      <div class="connection-status">
+        <span class="status-dot"></span>
+        <span class="status-text">Connected</span>
+      </div>
+    </header>
+
+    <!-- Detail Content -->
+    <main class="detail-viewport">
+
+      <!-- Loading State -->
+      <div id="detail-loading" class="tickets-state-card">
+        <div class="dot-flashing"></div>
+        <p>Loading ticket details...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="detail-error" class="tickets-state-card hidden">
+        <span class="state-icon">⚠️</span>
+        <p id="detail-error-message">Ticket not found.</p>
+        <a href="/tickets" class="btn btn-secondary">← Back to My Tickets</a>
+      </div>
+
+      <!-- Ticket Detail Card -->
+      <div id="detail-card" class="detail-card hidden">
+        <!-- Back link -->
+        <a href="/tickets" class="back-link" id="back-link">← Back to My Tickets</a>
+
+        <!-- Header row: subject + status -->
+        <div class="detail-header">
+          <h2 id="detail-subject" class="detail-subject"></h2>
+          <span id="detail-status" class="status-badge"></span>
+        </div>
+
+        <!-- Metadata grid -->
+        <div class="detail-meta-grid">
+          <div class="detail-meta-item">
+            <span class="detail-meta-label">Raised By</span>
+            <span id="detail-employee" class="detail-meta-value"></span>
+          </div>
+          <div class="detail-meta-item">
+            <span class="detail-meta-label">Department</span>
+            <span id="detail-department" class="detail-meta-value"></span>
+          </div>
+          <div class="detail-meta-item">
+            <span class="detail-meta-label">Category</span>
+            <span id="detail-category" class="detail-meta-value"></span>
+          </div>
+          <div class="detail-meta-item">
+            <span class="detail-meta-label">Priority</span>
+            <span id="detail-priority" class="detail-meta-value"></span>
+          </div>
+          <div class="detail-meta-item">
+            <span class="detail-meta-label">Ticket ID</span>
+            <span id="detail-id" class="detail-meta-value detail-id-text"></span>
+          </div>
+          <div class="detail-meta-item">
+            <span class="detail-meta-label">Created</span>
+            <span id="detail-created" class="detail-meta-value"></span>
+          </div>
+          <div class="detail-meta-item">
+            <span class="detail-meta-label">Last Updated</span>
+            <span id="detail-updated" class="detail-meta-value"></span>
+          </div>
+        </div>
+
+        <!-- Description section -->
+        <div class="detail-description-section">
+          <h3 class="detail-section-title">Description</h3>
+          <div id="detail-description" class="detail-description"></div>
+        </div>
+
+        <!-- Admin Management Panel (Only shown to Admin role) -->
+        <div id="admin-actions-card" class="admin-actions-card hidden">
+          <div class="admin-actions-header">
+            <div class="admin-actions-title">
+              <span class="admin-shield">🛡️</span>
+              <h3>Admin Management & Triage</h3>
+            </div>
+            <span class="admin-mode-pill">Admin Controls</span>
+          </div>
+          <div id="admin-update-alert" class="admin-update-alert hidden"></div>
+          <form id="admin-update-form" class="admin-update-form">
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label for="admin-select-status" class="admin-form-label">Update Status</label>
+                <select id="admin-select-status" class="admin-form-select">
+                  <option value="Open">Open</option>
+                  <option value="Assigned">Assigned</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Waiting for Employee">Waiting for Employee</option>
+                  <option value="Resolved">Resolved</option>
+                  <option value="Closed">Closed</option>
+                </select>
+              </div>
+              <div class="admin-form-group">
+                <label for="admin-select-priority" class="admin-form-label">Update Priority</label>
+                <select id="admin-select-priority" class="admin-form-select">
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                  <option value="Critical">Critical</option>
+                </select>
+              </div>
+              <div class="admin-form-group admin-btn-group">
+                <button type="submit" id="admin-update-btn" class="btn btn-primary">
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="ticket-detail.js"></script>
+</body>
+</html>

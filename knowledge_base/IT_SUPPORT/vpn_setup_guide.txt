@@ -1,0 +1,49 @@
+# VPN Setup and Configuration Guide
+
+This guide provides instructions for configuring and troubleshooting the Virtual Network (VPN) connection for remote work.
+
+## Prerequisites
+Before configuring the VPN, ensure you have:
+1. An active internet connection.
+2. A corporate-managed device.
+3. Multi-Factor Authentication (MFA) set up on your mobile device.
+
+## Connection Setup Steps
+Follow these steps to configure your VPN connection:
+
+1. **Open Network Settings**:
+   - On Windows: Go to Settings > Network & Internet > VPN.
+   - On macOS: Go to System Settings > Network > VPN.
+
+2. **Add a VPN Connection**:
+   - VPN Provider: Choose Windows (built-in) or the native macOS VPN client.
+   - Connection Name: Corporate VPN.
+   - Server Name or Address: `vpn.generic-enterprise.com`.
+   - VPN Type: L2TP/IPsec with pre-shared key or IKEv2.
+   - Type of sign-in info: User name and password.
+
+3. **Authenticate**:
+   - Enter your standard directory username and password.
+   - Click "Save".
+
+4. **Connect**:
+   - Select the newly created "Corporate VPN" connection and click "Connect".
+   - Approve the Multi-Factor Authentication (MFA) prompt sent to your registered authenticator app.
+
+## Troubleshooting Common Issues
+
+### Issue 1: Connection Timeout / Server Unreachable
+If the connection times out, perform the following troubleshooting steps:
+* Verify your local Wi-Fi or Ethernet connection is active and stable.
+* Ensure you are not behind a restrictive public firewall (e.g., hotel or coffee shop Wi-Fi) that blocks port 500 or 4500.
+* Try restarting your home router or modem.
+
+### Issue 2: Credentials Rejected
+* Confirm that your primary directory account is not locked or expired.
+* Verify you entered your full username without typos.
+* Reset your password via the self-service portal if necessary.
+
+### Issue 3: MFA Prompt Not Received
+* Open your authenticator app manually to check for pending approvals.
+* Ensure your mobile device has active cell service or Wi-Fi.
+* If your device or phone number has changed, contact the Service Desk to update your MFA registration.

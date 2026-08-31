@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - DeskAI</title>
+  <meta name="description" content="DeskAI System Administration and Support Ticket Management Console.">
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="tickets.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="admin-dashboard.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Premium Header -->
+    <header class="app-header">
+      <a href="/admin-dashboard" class="brand" title="DeskAI Admin Console">
+        <div class="brand-logo admin-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1ZM12 11.99H19C18.47 16.11 15.72 19.78 12 20.93V12H5V6.3L12 3.19V11.99Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>DeskAI</h1>
+          <span class="sub-brand admin-sub-brand">Admin Console</span>
+        </div>
+      </a>
+      <nav class="header-nav">
+        <a href="/admin-dashboard" class="nav-link active" id="nav-dashboard">🏠 Admin Dashboard</a>
+        <a href="/chat" class="nav-link" id="nav-chat">💬 Ask DeskAI</a>
+        <a href="/tickets" class="nav-link" id="nav-my-tickets">🎫 All Tickets</a>
+      </nav>
+      <div class="user-nav">
+        <span class="user-badge admin-badge" id="user-display">🛡️ Loading Admin...</span>
+        <button type="button" class="logout-btn" id="logout-btn" title="Sign out">Logout</button>
+      </div>
+      <div class="connection-status">
+        <span class="status-dot"></span>
+        <span class="status-text">Connected</span>
+      </div>
+    </header>
+    <div id="admin-update-alert" class="admin-update-alert hidden"></div>
+
+    <!-- Admin Dashboard Main Content -->
+    <main class="admin-viewport">
+      <div class="admin-content">
+        <!-- Hero Title Banner -->
+        <section class="admin-hero">
+          <div class="hero-text">
+            <h2 id="greeting-title" class="greeting-title">Support Operations Overview 🛡️</h2>
+            <p class="greeting-subtitle">Real-time cross-departmental ticket monitoring, classification, and management console.</p>
+          </div>
+          <div class="hero-actions">
+            <button id="refresh-btn" class="btn btn-secondary btn-sm" title="Refresh all tickets">
+              🔄 Refresh Data
+            </button>
+          </div>
+        </section>
+
+        <!-- Stats Section (All Tickets) -->
+        <section class="admin-stats-container">
+          <!-- Primary Overview Stats -->
+          <div class="stats-section primary-stats">
+            <div class="stat-card">
+              <div class="stat-icon">📋</div>
+              <div class="stat-info">
+                <span id="stat-total" class="stat-value">-</span>
+                <span class="stat-label">Total Tickets</span>
+              </div>
+            </div>
+            <div class="stat-card stat-open">
+              <div class="stat-icon">🔵</div>
+              <div class="stat-info">
+                <span id="stat-open" class="stat-value">-</span>
+                <span class="stat-label">Open</span>
+              </div>
+            </div>
+            <div class="stat-card stat-in-progress">
+              <div class="stat-icon">🟡</div>
+              <div class="stat-info">
+                <span id="stat-in-progress" class="stat-value">-</span>
+                <span class="stat-label">In Progress / Assigned</span>
+              </div>
+            </div>
+            <div class="stat-card stat-resolved">
+              <div class="stat-icon">🟢</div>
+              <div class="stat-info">
+                <span id="stat-resolved" class="stat-value">-</span>
+                <span class="stat-label">Resolved / Closed</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Secondary Metric Breakdown Grid -->
+          <div class="breakdown-grid">
+            <!-- Department Breakdown Card -->
+            <div class="breakdown-card">
+              <div class="breakdown-header">
+                <h4>🏢 By Department</h4>
+              </div>
+              <div class="breakdown-items" id="dept-breakdown">
+                <div class="breakdown-item"><span>IT Support:</span> <strong id="count-dept-it">-</strong></div>
+                <div class="breakdown-item"><span>Cybersecurity:</span> <strong id="count-dept-cyber">-</strong></div>
+                <div class="breakdown-item"><span>HR:</span> <strong id="count-dept-hr">-</strong></div>
+                <div class="breakdown-item"><span>Finance:</span> <strong id="count-dept-fin">-</strong></div>
+                <div class="breakdown-item"><span>Facilities/Admin:</span> <strong id="count-dept-fac">-</strong></div>
+              </div>
+            </div>
+
+            <!-- Priority Breakdown Card -->
+            <div class="breakdown-card">
+              <div class="breakdown-header">
+                <h4>⚡ By Priority</h4>
+              </div>
+              <div class="breakdown-items" id="priority-breakdown">
+                <div class="breakdown-item"><span class="priority-badge priority-critical">Critical:</span> <strong id="count-pri-critical">-</strong></div>
+                <div class="breakdown-item"><span class="priority-badge priority-high">High:</span> <strong id="count-pri-high">-</strong></div>
+                <div class="breakdown-item"><span class="priority-badge priority-medium">Medium:</span> <strong id="count-pri-medium">-</strong></div>
+                <div class="breakdown-item"><span class="priority-badge priority-low">Low:</span> <strong id="count-pri-low">-</strong></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tickets Management Section -->
+        <section class="admin-tickets-section">
+          <div class="admin-section-header">
+            <div class="section-title-wrapper">
+              <h3 class="section-title">All Support Tickets</h3>
+              <span id="filtered-ticket-count" class="ticket-count-badge">Loading...</span>
+            </div>
+          </div>
+
+          <!-- Combinable Filter Bar -->
+          <div class="admin-filter-bar">
+            <!-- Search Filter -->
+            <div class="filter-group filter-search">
+              <label for="admin-search-input" class="filter-label">Search:</label>
+              <input type="text" id="admin-search-input" class="filter-input" placeholder="Search by subject, employee, or ID...">
+            </div>
+
+            <!-- Department Filter -->
+            <div class="filter-group">
+              <label for="filter-department" class="filter-label">Department:</label>
+              <select id="filter-department" class="filter-select">
+                <option value="All" selected>All Departments</option>
+                <option value="IT Support">IT Support</option>
+                <option value="Cybersecurity">Cybersecurity</option>
+                <option value="HR">HR</option>
+                <option value="Finance">Finance</option>
+                <option value="Facilities/Admin">Facilities/Admin</option>
+              </select>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="filter-group">
+              <label for="filter-status" class="filter-label">Status:</label>
+              <select id="filter-status" class="filter-select">
+                <option value="All" selected>All Statuses</option>
+                <option value="Open">Open</option>
+                <option value="Assigned">Assigned</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Waiting for Employee">Waiting for Employee</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
+
+            <!-- Priority Filter -->
+            <div class="filter-group">
+              <label for="filter-priority" class="filter-label">Priority:</label>
+              <select id="filter-priority" class="filter-select">
+                <option value="All" selected>All Priorities</option>
+                <option value="Critical">Critical</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+
+            <!-- Clear Filters Button -->
+            <div class="filter-group filter-reset">
+              <button id="reset-filters-btn" class="btn btn-secondary btn-sm" title="Clear all filters">
+                Clear Filters
+              </button>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div id="admin-loading" class="tickets-state-card">
+            <div class="dot-flashing"></div>
+            <p>Loading enterprise ticket records...</p>
+          </div>
+
+          <!-- Error State -->
+          <div id="admin-error" class="tickets-state-card hidden">
+            <span class="state-icon">⚠️</span>
+            <p id="admin-error-message">Failed to load admin tickets.</p>
+            <button id="admin-retry-btn" class="btn btn-secondary">Retry</button>
+          </div>
+
+          <!-- Empty State -->
+          <div id="admin-empty" class="tickets-state-card hidden">
+            <span class="state-icon">🎫</span>
+            <p id="admin-empty-message">No tickets found matching the selected filters.</p>
+            <button id="admin-empty-reset-btn" class="btn btn-primary">Reset Filters</button>
+          </div>
+
+          <!-- Admin Ticket Table / List -->
+          <div id="admin-table-container" class="admin-table-container hidden">
+            <table class="admin-table" id="admin-tickets-table">
+              <thead>
+                <tr>
+                  <th>Subject & Ticket ID</th>
+                  <th>Employee</th>
+                  <th>Department</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-tickets-tbody">
+                <!-- Rows injected dynamically by admin-dashboard.js -->
+              </tbody>
+            </table>
+          </div>
+          <!-- Mobile card layout container (hidden on desktop, shown on mobile) -->
+          <div id="admin-cards-container" class="admin-cards-container hidden"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="admin-dashboard.js"></script>
+</body>
+</html>

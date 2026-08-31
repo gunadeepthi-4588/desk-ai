@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - DeskAI</title>
+  <meta name="description" content="Employee Workplace Assistant and Support Dashboard.">
+  <!-- Modern Premium Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="tickets.css">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Premium Header -->
+    <header class="app-header">
+      <a href="/" class="brand" title="DeskAI Dashboard">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>DeskAI</h1>
+          <span class="sub-brand">Employee Assistant</span>
+        </div>
+      </a>
+      <nav class="header-nav">
+        <a href="/" class="nav-link active" id="nav-dashboard">🏠 Dashboard</a>
+        <a href="/chat" class="nav-link" id="nav-chat">💬 Ask DeskAI</a>
+        <a href="/tickets" class="nav-link" id="nav-my-tickets">🎫 My Tickets</a>
+      </nav>
+      <div class="user-nav">
+        <span class="user-badge" id="user-display">👤 Loading...</span>
+        <button type="button" class="logout-btn" id="logout-btn" title="Sign out">Logout</button>
+      </div>
+      <div class="connection-status">
+        <span class="status-dot"></span>
+        <span class="status-text">Connected</span>
+      </div>
+    </header>
+
+    <!-- Dashboard Main Viewport -->
+    <main class="dashboard-viewport">
+      <div class="dashboard-content">
+        <!-- Hero Greeting Banner -->
+        <section class="dashboard-hero">
+          <div class="hero-text">
+            <h2 id="greeting-title" class="greeting-title">Welcome back 👋</h2>
+            <p class="greeting-subtitle">Here is a quick overview of your workplace support requests and assistant tools.</p>
+          </div>
+        </section>
+
+        <!-- Stats Summary Grid -->
+        <section class="stats-section">
+          <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <div class="stat-info">
+              <span id="stat-total" class="stat-value">-</span>
+              <span class="stat-label">Total Tickets</span>
+            </div>
+          </div>
+          <div class="stat-card stat-open">
+            <div class="stat-icon">🔵</div>
+            <div class="stat-info">
+              <span id="stat-open" class="stat-value">-</span>
+              <span class="stat-label">Open</span>
+            </div>
+          </div>
+          <div class="stat-card stat-in-progress">
+            <div class="stat-icon">🟡</div>
+            <div class="stat-info">
+              <span id="stat-in-progress" class="stat-value">-</span>
+              <span class="stat-label">In Progress</span>
+            </div>
+          </div>
+          <div class="stat-card stat-resolved">
+            <div class="stat-icon">🟢</div>
+            <div class="stat-info">
+              <span id="stat-resolved" class="stat-value">-</span>
+              <span class="stat-label">Resolved / Closed</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Quick Access Action Cards -->
+        <section class="quick-actions-section">
+          <h3 class="section-title">Quick Actions</h3>
+          <div class="actions-grid">
+            <a href="/chat" class="action-card action-chat">
+              <div class="action-card-header">
+                <div class="action-icon">💬</div>
+                <h4>Ask DeskAI</h4>
+              </div>
+              <p>Get instant answers regarding company policies, VPN setup, payroll, and benefits.</p>
+              <span class="action-cta">Start Chatting →</span>
+            </a>
+
+            <a href="/tickets" class="action-card action-tickets">
+              <div class="action-card-header">
+                <div class="action-icon">🎫</div>
+                <h4>My Tickets</h4>
+              </div>
+              <p>View and track the status of all support tickets you have submitted.</p>
+              <span class="action-cta">View All Tickets →</span>
+            </a>
+
+            <a href="/chat?mode=ticket" class="action-card action-raise">
+              <div class="action-card-header">
+                <div class="action-icon">🛠️</div>
+                <h4>Raise a Ticket</h4>
+              </div>
+              <p>Submit an issue through DeskAI — get automated resolution or immediately file an official support ticket.</p>
+              <span class="action-cta">Raise a Ticket →</span>
+            </a>
+          </div>
+        </section>
+
+        <!-- Recent Activity Section -->
+        <section class="recent-activity-section">
+          <div class="recent-header">
+            <h3 class="section-title">Recent Activity</h3>
+            <a href="/tickets" class="view-all-link">View all tickets →</a>
+          </div>
+
+          <!-- Loading State -->
+          <div id="recent-loading" class="tickets-state-card">
+            <div class="dot-flashing"></div>
+            <p>Loading your recent activity...</p>
+          </div>
+
+          <!-- Empty State -->
+          <div id="recent-empty" class="tickets-state-card hidden">
+            <span class="state-icon">🎫</span>
+            <p>No tickets yet — ask DeskAI a question to get started!</p>
+            <a href="/chat" class="btn btn-primary">Ask DeskAI a question</a>
+          </div>
+
+          <!-- Recent Tickets List -->
+          <div id="recent-list" class="tickets-list hidden"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

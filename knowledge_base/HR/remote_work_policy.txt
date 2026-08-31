@@ -1,0 +1,18 @@
+# Remote Work Policy and Guidelines
+
+This policy defines the expectations, eligibility, and rules for employees working remotely or in hybrid arrangements.
+
+## Eligibility and Core Hours
+* **Eligibility**: Remote work eligibility is determined by your role requirements and manager approval.
+* **Core Collaboration Hours**: Regardless of location, all team members must be available and online during core collaboration hours: **10:00 AM to 3:00 PM** local time.
+* **Response Times**: Employees are expected to check and respond to standard email and chat messages within a reasonable timeframe (typically 2 hours during working hours).
+
+## Workspace Requirements
+* **Secure Environment**: Remote employees must ensure their workspace is secure and private. Do not work on sensitive corporate files in open public areas where screens can be viewed by others.
+* **Internet Connection**: A reliable, high-speed internet connection (minimum 25 Mbps download / 10 Mbps upload) is required to support video calls and remote work software.
+* **Ergonomics**: Employees are responsible for setting up a safe, ergonomic workspace. The company offers a one-time stipend for ergonomic office chairs or desk equipment upon approval.
+
+## Equipment and Security
+* **Corporate Devices Only**: All work must be conducted on company-issued laptops. Do not use personal computers to access corporate networks or store corporate data.
+* **VPN Usage**: You must connect to the corporate VPN when accessing internal enterprise systems or working over public networks.
+* **Reporting Stolen Devices**: In the event of loss or theft of any company-issued equipment, notify IT Support and the security team immediately.

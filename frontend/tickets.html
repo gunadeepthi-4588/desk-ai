@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Tickets - DeskAI</title>
+  <meta name="description" content="View and track your support tickets raised through DeskAI.">
+  <!-- Modern Premium Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Shared Stylesheet -->
+  <link rel="stylesheet" href="index.css">
+  <!-- Tickets Page Styles -->
+  <link rel="stylesheet" href="tickets.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Reused Header -->
+    <header class="app-header">
+      <a href="/" class="brand" title="DeskAI Dashboard">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>DeskAI</h1>
+          <span class="sub-brand">Employee Assistant</span>
+        </div>
+      </a>
+      <nav class="header-nav">
+        <a href="/" class="nav-link" id="nav-dashboard">🏠 Dashboard</a>
+        <a href="/chat" class="nav-link" id="nav-chat">💬 Ask DeskAI</a>
+        <a href="/tickets" class="nav-link active" id="nav-my-tickets">🎫 My Tickets</a>
+      </nav>
+      <div class="user-nav">
+        <span class="user-badge" id="user-display">👤 User</span>
+        <button type="button" class="logout-btn" id="logout-btn" title="Sign out">Logout</button>
+      </div>
+      <div class="connection-status">
+        <span class="status-dot"></span>
+        <span class="status-text">Connected</span>
+      </div>
+    </header>
+
+    <!-- Tickets Main Content -->
+    <main class="tickets-viewport">
+      <!-- Page Title & Filter Controls -->
+      <div class="tickets-toolbar">
+        <div class="tickets-title-row">
+          <h2 class="page-title">My Tickets</h2>
+          <span id="ticket-count" class="ticket-count"></span>
+        </div>
+        <div class="filter-bar">
+          <label for="status-filter" class="filter-label">Filter by status:</label>
+          <select id="status-filter" class="filter-select">
+            <option value="All" selected>All</option>
+            <option value="Open">Open</option>
+            <option value="Assigned">Assigned</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Waiting for Employee">Waiting for Employee</option>
+            <option value="Resolved">Resolved</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="tickets-loading" class="tickets-state-card">
+        <div class="dot-flashing"></div>
+        <p>Loading your tickets...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="tickets-error" class="tickets-state-card hidden">
+        <span class="state-icon">⚠️</span>
+        <p id="tickets-error-message">Failed to load tickets.</p>
+        <button id="retry-btn" class="btn btn-secondary">Retry</button>
+      </div>
+
+      <!-- Empty State -->
+      <div id="tickets-empty" class="tickets-state-card hidden">
+        <span class="state-icon">🎫</span>
+        <p>You haven't raised any tickets yet.</p>
+        <a href="/chat" class="btn btn-primary">Ask DeskAI a question</a>
+      </div>
+
+      <!-- Tickets List -->
+      <div id="tickets-list" class="tickets-list hidden"></div>
+    </main>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="tickets.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+# Office Wi-Fi Connectivity and Troubleshooting Guide
+
+This guide describes how to connect to the corporate Wi-Fi network and resolve common connection or IP address allocation issues.
+
+## Connection Instructions
+1. Select the SSID named **Enterprise-Corp** from your device's Wi-Fi list.
+2. When prompted, select **WPA3-Enterprise** or **WPA2-Enterprise** security.
+3. Enter your standard directory username and password.
+4. If prompted to trust the certificate, verify the certificate domain is `generic-enterprise.com` and accept.
+
+*Note: Guest access is available via the **Enterprise-Guest** SSID, which requires web portal acceptance and is restricted to internet browsing only.*
+
+## Troubleshooting Connection Issues
+
+### Step 1: Toggle Wi-Fi and Restart
+* Turn your device's Wi-Fi adapter off, wait 10 seconds, and turn it back on.
+* If the connection still fails, restart your computer or mobile device.
+
+### Step 2: Forget Network and Re-connect
+* Go to your device's network preferences.
+* Find **Enterprise-Corp** in your list of saved networks and choose "Forget" or "Remove".
+* Try connecting again from scratch, ensuring you enter your password correctly.
+
+### Step 3: Resolve IP Address Allocation Issues (Release and Renew)
+If you are connected to the Wi-Fi network but have no internet access (or have a self-assigned IP address like 169.254.x.x), release and renew your IP address:
+
+**On Windows (Command Prompt)**:
+1. Open Command Prompt.
+2. Type `ipconfig /release` and press Enter.
+3. Type `ipconfig /renew` and press Enter.
+4. Type `ipconfig /flushdns` to clear the DNS resolver cache.
+
+**On macOS**:
+1. Open System Settings > Network.
+2. Select Wi-Fi and click "Details..." next to the active connection.
+3. Click "TCP/IP" in the sidebar.
+4. Click "Renew DHCP Lease".
+
+If connectivity issues persist, verify that your device's MAC address is not blocked by security policies or contact the IT Service Desk.

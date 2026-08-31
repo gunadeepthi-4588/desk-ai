@@ -1,0 +1,24 @@
+# Security Awareness Basics (NIST-Aligned)
+
+This document outlines the core security practices aligned with standard NIST (National Institute of Standards and Technology) guidelines for maintaining workplace cybersecurity.
+
+## Workstation Security
+Securing your physical and digital workstation is the first line of defense against unauthorized access:
+
+1. **Lock Your Screen**:
+   - Always lock your computer screen when leaving your desk, even if only for a brief moment.
+   - Shortcut on Windows: Press `Win + L`.
+   - Shortcut on macOS: Press `Ctrl + Cmd + Q`.
+
+2. **Clean Desk Policy**:
+   - Do not leave sensitive papers, notes containing passwords, or storage media (like USB drives) unattended on your desk.
+   - Lock physical documents in drawers or cabinets when not in use.
+
+3. **Secure Workstation Settings**:
+   - Automatic screen lock is enforced after 10 minutes of inactivity. Do not attempt to disable this setting.
+
+## Device and Data Management
+* **Approved Software Only**: Install software only from the official software center. Unapproved third-party software poses a security risk.
+* **USB and External Storage**: Do not connect unknown USB drives or external storage media to your workstation. 
+* **Data Encryption**: Ensure BitLocker (Windows) or FileVault (macOS) is enabled on your laptop storage drive.
+* **Workplace Shredding**: Discard physical documents containing sensitive or proprietary data into the designated secure shredding bins.

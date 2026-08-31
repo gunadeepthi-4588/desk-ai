@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ask DeskAI - Smart Support</title>
+  <!-- Modern Premium Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Premium Header with Glassmorphism -->
+    <header class="app-header">
+      <a href="/" class="brand" title="DeskAI Dashboard">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>DeskAI</h1>
+          <span class="sub-brand">Employee Assistant</span>
+        </div>
+      </a>
+      <nav class="header-nav">
+        <a href="/" class="nav-link" id="nav-dashboard">🏠 Dashboard</a>
+        <a href="/chat" class="nav-link active" id="nav-chat">💬 Ask DeskAI</a>
+        <a href="/tickets" class="nav-link" id="nav-my-tickets">🎫 My Tickets</a>
+      </nav>
+      <div class="user-nav">
+        <span class="user-badge" id="user-display">👤 User</span>
+        <button type="button" class="logout-btn" id="logout-btn" title="Sign out">Logout</button>
+      </div>
+      <div class="connection-status">
+        <span class="status-dot"></span>
+        <span class="status-text">Connected</span>
+      </div>
+    </header>
+
+    <!-- Chat Viewport -->
+    <main class="chat-viewport">
+      <!-- Mode Banner (shown when navigated from Raise Ticket CTA) -->
+      <div id="ticket-mode-banner" class="ticket-mode-banner hidden">
+        <span class="banner-icon">💡</span>
+        <div class="banner-text">
+          <strong>Need to raise a ticket?</strong> Ask your question below — if DeskAI cannot find an answer in corporate policies, you'll immediately receive an option to raise an official support ticket.
+        </div>
+        <button id="close-ticket-banner" class="banner-close" title="Dismiss banner">&times;</button>
+      </div>
+
+      <div id="chat-history" class="chat-history">
+        <!-- Welcome Message -->
+        <div class="message system-message">
+          <div class="welcome-card">
+            <h2>Welcome to DeskAI Support</h2>
+            <p>Your AI assistant across all workplace teams — IT Support, Cybersecurity, HR, Finance, and Facilities. Ask any question in free text, or try an example below:</p>
+            <div class="prompts-heading">Example questions across departments:</div>
+            <div class="quick-prompts">
+              <button class="prompt-btn" data-question="How do I configure my VPN connection?">🖥️ IT: Configure VPN</button>
+              <button class="prompt-btn" data-question="How do I report a suspected phishing email?">🛡️ Cyber: Report Phishing</button>
+              <button class="prompt-btn" data-question="How many days of annual leave do I get?">👥 HR: Annual Leave</button>
+              <button class="prompt-btn" data-question="What is the policy for claiming meal expenses during business travel?">💳 Finance: Meal Expenses</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Error Alert Container -->
+    <div id="error-container" class="error-container hidden">
+      <div class="error-banner">
+        <span class="error-icon">⚠️</span>
+        <span id="error-message" class="error-text">An error occurred.</span>
+        <button id="error-close-btn" class="error-close-btn">&times;</button>
+      </div>
+    </div>
+
+    <!-- Input Footer Area -->
+    <footer class="app-footer">
+      <form id="chat-form" class="chat-form" novalidate>
+        <div class="input-wrapper">
+          <textarea
+            id="chat-input"
+            placeholder="Type your question here (e.g. How do I reset my password?)..."
+            rows="1"
+            maxlength="1000"
+            required
+          ></textarea>
+        </div>
+        <button type="submit" id="send-btn" class="send-btn" disabled aria-label="Send message">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z" fill="currentColor"/>
+          </svg>
+        </button>
+      </form>
+      <div class="footer-hint">Grounded by corporate knowledge. Safe & confidential.</div>
+    </footer>
+  </div>
+
+    <!-- Raise a Ticket Modal -->
+    <div id="ticket-modal" class="modal-overlay hidden">
+      <div class="modal-container">
+        <header class="modal-header">
+          <h2>Raise a Support Ticket</h2>
+          <button id="close-modal-btn" class="close-modal-btn">&times;</button>
+        </header>
+        <div id="modal-error" class="modal-error hidden">
+          <span id="modal-error-message" class="error-text">Failed to create ticket.</span>
+        </div>
+        <form id="ticket-form" class="modal-form" novalidate>
+          <div class="form-group">
+            <label for="ticket-department">Department <span class="required">*</span> <span id="dept-hint" class="auto-suggest-hint hidden">(auto-suggested)</span></label>
+            <select id="ticket-department" required>
+              <option value="" disabled selected>Select a department...</option>
+              <option value="IT Support">IT Support</option>
+              <option value="Cybersecurity">Cybersecurity</option>
+              <option value="HR">HR</option>
+              <option value="Finance">Finance</option>
+              <option value="Facilities/Admin">Facilities/Admin</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ticket-category">Category <span class="required">*</span></label>
+            <input type="text" id="ticket-category" placeholder="e.g. Laptop hardware, VPN error, Payroll" required>
+          </div>
+          <div class="form-group">
+            <label for="ticket-priority">Priority <span class="required">*</span> <span id="priority-hint" class="auto-suggest-hint hidden">(auto-suggested)</span></label>
+            <select id="ticket-priority" required>
+              <option value="Low">Low</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ticket-subject">Subject <span class="required">*</span></label>
+            <input type="text" id="ticket-subject" required>
+          </div>
+          <div class="form-group">
+            <label for="ticket-description">Description <span class="required">*</span></label>
+            <textarea id="ticket-description" rows="4" required></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" id="cancel-modal-btn" class="btn btn-secondary">Cancel</button>
+            <button type="submit" id="submit-ticket-btn" class="btn btn-primary" disabled>Submit Ticket</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  <!-- JavaScript -->
+  <script src="index.js"></script>
+</body>
+</html>
