@@ -43,6 +43,8 @@ DeskAI delivers a self‑contained Flask backend, a vanilla‑HTML/CSS/JavaScrip
 | **Database** | Supabase (PostgreSQL) – credentials supplied via environment variables |
 | **Testing** | `pytest` 8.2.2 |
 
+> 📐 **System Architecture & Workflows**: For interactive Mermaid sequence and flow diagrams detailing Document Ingestion, Q&A (RAG), and Server-Side Authentication, refer to [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ## Project Structure
 ```
 DeskAI/
@@ -51,6 +53,8 @@ DeskAI/
 ├─ .gitignore                # Ignores .env, caches, virtual‑env folders, etc.
 ├─ app.py                     # Flask entry point
 ├─ backend/                  # Flask blueprint, config, Supabase client
+├─ docs/                     # Architecture & workflow documentation
+│   └─ ARCHITECTURE.md
 ├─ frontend/                 # HTML / CSS / JS assets (admin UI, ticket UI)
 ├─ knowledge_base/           # Domain folders with plain‑text, PDF, DOCX files
 │   ├─ CYBERSECURITY/
