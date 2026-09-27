@@ -9,6 +9,7 @@
 - [Solution Overview](#solution-overview)
 - [Key Features](#key-features)
 - [Architecture & Tech Stack](#architecture--tech-stack)
+- [System Architecture](#system-architecture)
 - [Project Structure](#project-structure)
 - [Setup & Installation (Windows PowerShell)](#setup--installation-windows-powershell)
 - [Running the Application](#running-the-application)
@@ -43,7 +44,37 @@ DeskAI delivers a self‑contained Flask backend, a vanilla‑HTML/CSS/JavaScrip
 | **Database** | Supabase (PostgreSQL) – credentials supplied via environment variables |
 | **Testing** | `pytest` 8.2.2 |
 
-> 📐 **System Architecture & Workflows**: For interactive Mermaid sequence and flow diagrams detailing Document Ingestion, Q&A (RAG), and Server-Side Authentication, refer to [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+## System Architecture
+
+![DeskAI Architecture](docs/architecture/deskai-architecture.svg)
+
+### Key Architectural Components
+
+1. **Authentication & Session Security**:
+   - Users authenticate with email and password via `POST /api/auth/login`.
+   - Passwords are verified against stored hashes using `werkzeug.security`.
+   - A signed Flask session token (`session['user']`) is created to identify role permissions (`employee` vs `admin`).
+   - The `@login_required` middleware validates user sessions before granting access to protected API routes (`/api/chat`, `/api/tickets`).
+
+2. **Knowledge Ingestion Pipeline (Flow 1)**:
+   - **Document Upload**: Supports `.pdf`, `.docx`, and `.txt` files up to 10 MB via `POST /api/documents/upload`.
+   - **Storage**: Raw uploads are archived in a private Supabase Storage bucket (`"company-documents"`).
+   - **Text Extraction & Chunking**: `pypdf` and `python-docx` extract text page-by-page, split into 500-character chunks with a 50-character sliding overlap.
+   - **Embedding Generation**: Chunks are embedded into 3072-dimensional vectors using Google Gemini (`gemini-embedding-001`).
+   - **Vector Persistence**: Embeddings and chunk metadata are saved to the `document_chunks` table in Supabase PostgreSQL.
+
+3. **RAG / AI Query Pipeline (Flow 2)**:
+   - **Query Embedding**: Natural language user questions from the dashboard are embedded using Gemini (`gemini-embedding-001`).
+   - **Vector Similarity Search**: Cosine distance is queried against the `document_chunks` table using an HNSW index (`halfvec_cosine_ops`) via the `match_document_chunks` RPC function with a default similarity threshold of `0.40`.
+   - **Strict Grounded Generation**: Retrieved context is injected into Google Gemini (`gemini-3.5-flash`) with temperature `0.0` and strict system instructions to eliminate hallucinations.
+   - **Cited Response**: Grounded answers with cited source documents and page numbers are returned to the DeskAI dashboard UI.
+
+4. **Database & Storage Layer**:
+   - **Application Relational Database**: Manages user profiles, role-based access control, ticket lifecycle (`Open`, `Assigned`, `Resolved`), and document statuses.
+   - **Vector Database**: Supabase `pgvector` extension with HNSW index for sub-millisecond similarity matching.
+   - **Private Object Storage**: Supabase Storage bucket for raw knowledge documents.
+
+> 📐 **Detailed Diagrams**: For sequence diagrams and additional flow specifications, refer to [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Project Structure
 ```
@@ -54,7 +85,9 @@ DeskAI/
 ├─ app.py                     # Flask entry point
 ├─ backend/                  # Flask blueprint, config, Supabase client
 ├─ docs/                     # Architecture & workflow documentation
-│   └─ ARCHITECTURE.md
+│   ├─ ARCHITECTURE.md
+│   └─ architecture/
+│       └─ deskai-architecture.svg
 ├─ frontend/                 # HTML / CSS / JS assets (admin UI, ticket UI)
 ├─ knowledge_base/           # Domain folders with plain‑text, PDF, DOCX files
 │   ├─ CYBERSECURITY/

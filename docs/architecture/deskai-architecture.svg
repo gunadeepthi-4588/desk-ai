@@ -1,0 +1,374 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 950" width="100%" height="100%" style="background:#ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+
+    <linearGradient id="authGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+
+    <linearGradient id="dashGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#0369A1"/>
+    </linearGradient>
+
+    <linearGradient id="ingestGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+
+    <linearGradient id="ragGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+
+    <linearGradient id="geminiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#6D28D9"/>
+    </linearGradient>
+
+    <linearGradient id="dbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+
+    <!-- Filters & Shadows -->
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <filter id="glowShadow" x="-10%" y="-10%" width="120%" height="120%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#6366F1" flood-opacity="0.25"/>
+    </filter>
+
+    <!-- Arrow Markers -->
+    <marker id="arrow-indigo" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#4F46E5"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0284C7"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#059669"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#D97706"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#7C3AED"/>
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748B"/>
+    </marker>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1200" height="950" fill="#F8FAFC"/>
+
+  <!-- ==================== HEADER SECTION ==================== -->
+  <rect x="30" y="20" width="1140" height="60" rx="10" fill="url(#headerGrad)" filter="url(#cardShadow)"/>
+  <text x="50" y="52" fill="#FFFFFF" font-size="20" font-weight="700" letter-spacing="0.5">DeskAI — System Architecture &amp; Data Flow Diagram</text>
+  <rect x="990" y="36" width="160" height="28" rx="6" fill="#334155"/>
+  <text x="1070" y="54" fill="#38BDF8" font-size="11" font-weight="600" text-anchor="middle">Flask + Gemini + Supabase</text>
+
+  <!-- ==================== SECTION 1: AUTHENTICATION & ACCESS ==================== -->
+  <rect x="30" y="95" width="1140" height="155" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" filter="url(#cardShadow)"/>
+  
+  <!-- Section Badge -->
+  <rect x="45" y="105" width="190" height="22" rx="4" fill="#EEF2FF"/>
+  <text x="55" y="120" fill="#4338CA" font-size="11" font-weight="700">AUTHENTICATION &amp; ACCESS FLOW</text>
+
+  <!-- Node: User -->
+  <g transform="translate(50, 135)">
+    <rect width="130" height="70" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5"/>
+    <circle cx="28" cy="35" r="14" fill="#EEF2FF"/>
+    <text x="28" y="40" font-size="14" text-anchor="middle">👤</text>
+    <text x="50" y="30" font-size="13" font-weight="700" fill="#0F172A">User / Agent</text>
+    <text x="50" y="48" font-size="10" fill="#64748B">Employee / Admin</text>
+    <text x="50" y="60" font-size="9" fill="#94A3B8">Credentials Input</text>
+  </g>
+
+  <!-- Arrow 1: User -> Auth API -->
+  <line x1="180" y1="170" x2="215" y2="170" stroke="#4F46E5" stroke-width="2" marker-end="url(#arrow-indigo)"/>
+  <text x="198" y="162" font-size="9" font-weight="600" fill="#4F46E5" text-anchor="middle">Login</text>
+
+  <!-- Node: Auth API -->
+  <g transform="translate(225, 135)">
+    <rect width="150" height="70" rx="8" fill="#FFFFFF" stroke="#6366F1" stroke-width="1.5"/>
+    <rect x="8" y="8" width="24" height="24" rx="4" fill="#EEF2FF"/>
+    <text x="20" y="25" font-size="12" text-anchor="middle">🔐</text>
+    <text x="38" y="24" font-size="12" font-weight="700" fill="#1E1B4B">Auth API</text>
+    <text x="10" y="46" font-size="9" font-weight="500" fill="#475569">POST /api/auth/login</text>
+    <text x="10" y="59" font-size="9" fill="#64748B">Verify Hash (Werkzeug)</text>
+  </g>
+
+  <!-- Arrow 2: Auth API -> JWT Token -->
+  <line x1="375" y1="170" x2="415" y2="170" stroke="#4F46E5" stroke-width="2" marker-end="url(#arrow-indigo)"/>
+  <text x="395" y="162" font-size="9" font-weight="600" fill="#4F46E5" text-anchor="middle">Sign</text>
+
+  <!-- Node: JWT Token / Session -->
+  <g transform="translate(425, 135)">
+    <rect width="145" height="70" rx="8" fill="url(#authGrad)"/>
+    <text x="72" y="28" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">🔑 Auth Token / JWT</text>
+    <text x="72" y="46" font-size="9" fill="#E0E7FF" text-anchor="middle">Signed User Session</text>
+    <text x="72" y="59" font-size="8.5" fill="#C7D2FE" text-anchor="middle">Claims: id, role, email</text>
+  </g>
+
+  <!-- Arrow 3: JWT -> Middleware -->
+  <line x1="570" y1="170" x2="605" y2="170" stroke="#4F46E5" stroke-width="2" marker-end="url(#arrow-indigo)"/>
+
+  <!-- Node: JWT Middleware -->
+  <g transform="translate(615, 125)">
+    <rect width="210" height="90" rx="8" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.5"/>
+    <text x="15" y="23" font-size="12" font-weight="700" fill="#92400E">🛡️ Auth / JWT Middleware</text>
+    <text x="15" y="40" font-size="9.5" font-weight="600" fill="#B45309">@login_required Decorator</text>
+    <rect x="10" y="48" width="190" height="32" rx="4" fill="#FFFBEB" stroke="#FDE68A" stroke-width="1"/>
+    <text x="15" y="60" font-size="8" fill="#78350F">JWT Middleware validates token/session</text>
+    <text x="15" y="72" font-size="8" fill="#78350F">before allowing access to protected routes.</text>
+  </g>
+
+  <!-- Arrow 4: Middleware -> Protected Route -->
+  <line x1="825" y1="170" x2="865" y2="170" stroke="#0284C7" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <text x="845" y="162" font-size="8.5" font-weight="600" fill="#0284C7" text-anchor="middle">Valid</text>
+
+  <!-- Node: Protected Route -->
+  <g transform="translate(875, 135)">
+    <rect width="135" height="70" rx="8" fill="#F0F9FF" stroke="#0EA5E9" stroke-width="1.5"/>
+    <text x="67" y="26" font-size="11" font-weight="700" fill="#0369A1" text-anchor="middle">🔒 Protected API</text>
+    <text x="67" y="43" font-size="9" fill="#0284C7" text-anchor="middle">/api/chat</text>
+    <text x="67" y="57" font-size="9" fill="#0284C7" text-anchor="middle">/api/tickets</text>
+  </g>
+
+  <!-- Arrow 5: Protected Route -> Dashboard -->
+  <line x1="1010" y1="170" x2="1040" y2="170" stroke="#0284C7" stroke-width="2" marker-end="url(#arrow-blue)"/>
+
+  <!-- Node: DeskAI Dashboard -->
+  <g transform="translate(1050, 130)">
+    <rect width="105" height="80" rx="8" fill="url(#dashGrad)"/>
+    <text x="52" y="28" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">💻 DeskAI</text>
+    <text x="52" y="44" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Dashboard</text>
+    <text x="52" y="62" font-size="8.5" fill="#BAE6FD" text-anchor="middle">Role-Based UI</text>
+  </g>
+
+
+  <!-- ==================== MAIN PIPELINES CONTAINER ==================== -->
+
+  <!-- ==================== FLOW 1: DOCUMENT INGESTION ==================== -->
+  <rect x="30" y="265" width="555" height="425" rx="10" fill="#FFFFFF" stroke="#A7F3D0" stroke-width="1.5" filter="url(#cardShadow)"/>
+  
+  <!-- Flow 1 Header Badge -->
+  <rect x="45" y="277" width="310" height="24" rx="4" fill="#ECFDF5"/>
+  <text x="55" y="293" fill="#047857" font-size="11" font-weight="700">FLOW 1 — KNOWLEDGE INGESTION PIPELINE</text>
+
+  <!-- Ingestion Step 1: Upload -->
+  <g transform="translate(50, 315)">
+    <rect width="230" height="65" rx="8" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5"/>
+    <text x="15" y="24" font-size="12" font-weight="700" fill="#166534">📄 Document Upload</text>
+    <text x="15" y="40" font-size="9.5" fill="#15803D">Knowledge Files: .pdf, .docx, .txt</text>
+    <text x="15" y="53" font-size="9" fill="#4B5563">Max: 10MB per document</text>
+  </g>
+
+  <!-- Arrow: Upload -> API -->
+  <line x1="280" y1="347" x2="330" y2="347" stroke="#059669" stroke-width="2" marker-end="url(#arrow-emerald)"/>
+
+  <!-- Ingestion Step 2: Backend API -->
+  <g transform="translate(340, 315)">
+    <rect width="230" height="65" rx="8" fill="#FFFFFF" stroke="#059669" stroke-width="1.5"/>
+    <text x="15" y="24" font-size="12" font-weight="700" fill="#065F46">⚙️ Backend Ingest API</text>
+    <text x="15" y="40" font-size="9.5" font-weight="600" fill="#047857">POST /api/documents/upload</text>
+    <text x="15" y="53" font-size="9" fill="#4B5563">Format &amp; MIME validation</text>
+  </g>
+
+  <!-- Arrow: API down to Extractor -->
+  <path d="M 455 380 L 455 405 L 165 405 L 165 420" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#arrow-emerald)"/>
+
+  <!-- Ingestion Step 3: Text Extraction -->
+  <g transform="translate(50, 430)">
+    <rect width="230" height="65" rx="8" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5"/>
+    <text x="15" y="24" font-size="12" font-weight="700" fill="#166534">📑 Text Extraction</text>
+    <text x="15" y="40" font-size="9.5" fill="#15803D">pypdf (PDF) + python-docx (DOCX)</text>
+    <text x="15" y="53" font-size="9" fill="#4B5563">TextExtractor Service (Page-aware)</text>
+  </g>
+
+  <!-- Arrow: Extractor -> Chunking -->
+  <line x1="280" y1="462" x2="330" y2="462" stroke="#059669" stroke-width="2" marker-end="url(#arrow-emerald)"/>
+
+  <!-- Ingestion Step 4: Text Chunking -->
+  <g transform="translate(340, 430)">
+    <rect width="230" height="65" rx="8" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.5"/>
+    <text x="15" y="24" font-size="12" font-weight="700" fill="#166534">✂️ Text Chunking</text>
+    <text x="15" y="40" font-size="9.5" fill="#15803D">Chunker Service (Sliding Window)</text>
+    <text x="15" y="53" font-size="9" fill="#4B5563">Chunk size: 500 chars | Overlap: 50</text>
+  </g>
+
+  <!-- Arrow: Chunking down to Embedding Model -->
+  <path d="M 455 495 L 455 520 L 165 520 L 165 535" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#arrow-emerald)"/>
+
+  <!-- Ingestion Step 5: Embedding Model -->
+  <g transform="translate(50, 545)">
+    <rect width="230" height="65" rx="8" fill="#FAF5FF" stroke="#A855F7" stroke-width="1.5"/>
+    <text x="15" y="24" font-size="12" font-weight="700" fill="#6B21A8">🔮 Embedding Model</text>
+    <text x="15" y="40" font-size="9.5" font-weight="600" fill="#7C3AED">Google Gemini API</text>
+    <text x="15" y="53" font-size="9" fill="#6B7280">Model: gemini-embedding-001</text>
+  </g>
+
+  <!-- Arrow: Embedding Model -> Vectors -->
+  <line x1="280" y1="577" x2="330" y2="577" stroke="#7C3AED" stroke-width="2" marker-end="url(#arrow-purple)"/>
+
+  <!-- Ingestion Step 6: Vector Embeddings Output -->
+  <g transform="translate(340, 545)">
+    <rect width="230" height="65" rx="8" fill="url(#ingestGrad)"/>
+    <text x="15" y="24" font-size="12" font-weight="700" fill="#FFFFFF">📦 Vector Embeddings</text>
+    <text x="15" y="40" font-size="9.5" fill="#D1FAE5">3072-Dimensional Dense Vectors</text>
+    <text x="15" y="53" font-size="9" fill="#A7F3D0">Ready for pgvector persistence ↓</text>
+  </g>
+
+  <!-- Ingestion Footnote Arrow to DB -->
+  <path d="M 455 610 L 455 700" fill="none" stroke="#059669" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow-emerald)"/>
+
+
+  <!-- ==================== FLOW 2: RAG / AI QUERY PIPELINE ==================== -->
+  <rect x="615" y="265" width="555" height="425" rx="10" fill="#FFFFFF" stroke="#FDE68A" stroke-width="1.5" filter="url(#cardShadow)"/>
+  
+  <!-- Flow 2 Header Badge -->
+  <rect x="630" y="277" width="240" height="24" rx="4" fill="#FFFBEB"/>
+  <text x="640" y="293" fill="#B45309" font-size="11" font-weight="700">FLOW 2 — RAG / AI QUERY PIPELINE</text>
+
+  <!-- RAG Step 1: User Query -->
+  <g transform="translate(635, 315)">
+    <rect width="230" height="65" rx="8" fill="#FFFBEB" stroke="#FCD34D" stroke-width="1.5"/>
+    <text x="15" y="24" font-size="12" font-weight="700" fill="#92400E">❓ User Query / Issue</text>
+    <text x="15" y="40" font-size="9.5" fill="#B45309">Employee Question / Ticket Text</text>
+    <text x="15" y="53" font-size="9" fill="#6B7280">Submitted from Dashboard UI</text>
+  </g>
+
+  <!-- Arrow: Query -> API -->
+  <line x1="865" y1="347" x2="915" y2="347" stroke="#D97706" stroke-width="2" marker-end="url(#arrow-amber)"/>
+
+  <!-- RAG Step 2: Query Embedding API -->
+  <g transform="translate(925, 315)">
+    <rect width="230" height="65" rx="8" fill="#FAF5FF" stroke="#A855F7" stroke-width="1.5"/>
+    <text x="15" y="24" font-size="12" font-weight="700" fill="#6B21A8">⚡ Query Embedding</text>
+    <text x="15" y="40" font-size="9.5" font-weight="600" fill="#7C3AED">gemini-embedding-001</text>
+    <text x="15" y="53" font-size="9" fill="#6B7280">Generates 3072-dim Query Vector</text>
+  </g>
+
+  <!-- Arrow: Query Embedding down to Search -->
+  <path d="M 1040 380 L 1040 405 L 750 405 L 750 420" fill="none" stroke="#D97706" stroke-width="2" marker-end="url(#arrow-amber)"/>
+
+  <!-- RAG Step 3: Vector Search -->
+  <g transform="translate(635, 430)">
+    <rect width="230" height="65" rx="8" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5"/>
+    <text x="15" y="24" font-size="12" font-weight="700" fill="#1E293B">🔍 Vector DB Search</text>
+    <text x="15" y="40" font-size="9.5" font-weight="600" fill="#334155">RPC match_document_chunks</text>
+    <text x="15" y="53" font-size="9" fill="#64748B">Cosine Match (1 - distance &gt; 0.40)</text>
+  </g>
+
+  <!-- Arrow: Search -> Chunks -->
+  <line x1="865" y1="462" x2="915" y2="462" stroke="#D97706" stroke-width="2" marker-end="url(#arrow-amber)"/>
+
+  <!-- RAG Step 4: Retrieved Chunks -->
+  <g transform="translate(925, 430)">
+    <rect width="230" height="65" rx="8" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="1.5"/>
+    <text x="15" y="24" font-size="12" font-weight="700" fill="#065F46">📚 Relevant Chunks</text>
+    <text x="15" y="40" font-size="9.5" fill="#047857">Top-K Knowledge Context</text>
+    <text x="15" y="53" font-size="9" fill="#059669">Ranked with Filename &amp; Page #</text>
+  </g>
+
+  <!-- Arrow: Chunks down to LLM -->
+  <path d="M 1040 495 L 1040 520 L 750 520 L 750 535" fill="none" stroke="#D97706" stroke-width="2" marker-end="url(#arrow-amber)"/>
+
+  <!-- RAG Step 5: Gemini LLM -->
+  <g transform="translate(635, 545)">
+    <rect width="230" height="65" rx="8" fill="url(#geminiGrad)"/>
+    <text x="15" y="24" font-size="12" font-weight="700" fill="#FFFFFF">🤖 Google Gemini LLM</text>
+    <text x="15" y="40" font-size="9.5" fill="#F3E8FF">Model: gemini-3.5-flash</text>
+    <text x="15" y="53" font-size="9" fill="#E9D5FF">Temp: 0.0 | Grounded System Prompt</text>
+  </g>
+
+  <!-- Arrow: LLM -> AI Response -->
+  <line x1="865" y1="577" x2="915" y2="577" stroke="#7C3AED" stroke-width="2" marker-end="url(#arrow-purple)"/>
+
+  <!-- RAG Step 6: AI Response -->
+  <g transform="translate(925, 545)">
+    <rect width="230" height="65" rx="8" fill="url(#dashGrad)"/>
+    <text x="15" y="24" font-size="12" font-weight="700" fill="#FFFFFF">💡 AI Generated Answer</text>
+    <text x="15" y="40" font-size="9.5" fill="#E0F2FE">Factual, Hallucination-Free</text>
+    <text x="15" y="53" font-size="9" fill="#BAE6FD">Cited Sources displayed on Dashboard</text>
+  </g>
+
+  <!-- RAG Search link to Vector DB below -->
+  <path d="M 750 495 L 750 700" fill="none" stroke="#D97706" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow-amber)"/>
+
+
+  <!-- ==================== SECTION 3: STORAGE & DATABASE LAYER ==================== -->
+  <rect x="30" y="710" width="1140" height="215" rx="10" fill="#0F172A" filter="url(#cardShadow)"/>
+  
+  <!-- Database Layer Header Badge -->
+  <rect x="45" y="725" width="280" height="24" rx="4" fill="#1E293B"/>
+  <text x="55" y="741" fill="#38BDF8" font-size="11" font-weight="700">DATABASE &amp; STORAGE LAYER (SUPABASE / POSTGRESQL)</text>
+
+  <!-- DB Component 1: Application Relational DB -->
+  <g transform="translate(50, 765)">
+    <rect width="340" height="135" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1.5"/>
+    <rect x="15" y="15" width="28" height="28" rx="4" fill="#0EA5E9"/>
+    <text x="29" y="34" font-size="14" text-anchor="middle" fill="#FFFFFF">🗄️</text>
+    <text x="52" y="28" font-size="13" font-weight="700" fill="#F8FAFC">Application Database</text>
+    <text x="52" y="42" font-size="9.5" fill="#38BDF8">Supabase PostgreSQL (Relational)</text>
+    
+    <line x1="15" y1="52" x2="325" y2="52" stroke="#334155" stroke-width="1"/>
+    
+    <text x="15" y="70" font-size="10" font-weight="600" fill="#E2E8F0">• users Table</text>
+    <text x="100" y="70" font-size="9" fill="#94A3B8">(id, email, password_hash, role, dept)</text>
+    
+    <text x="15" y="88" font-size="10" font-weight="600" fill="#E2E8F0">• tickets Table</text>
+    <text x="105" y="88" font-size="9" fill="#94A3B8">(id, subject, priority, status, employee_id)</text>
+    
+    <text x="15" y="106" font-size="10" font-weight="600" fill="#E2E8F0">• documents Table</text>
+    <text x="125" y="106" font-size="9" fill="#94A3B8">(filename, file_type, size, status)</text>
+
+    <text x="15" y="122" font-size="8.5" fill="#64748B">Secured with Row Level Security (RLS) &amp; Session Auth</text>
+  </g>
+
+  <!-- DB Component 2: Vector Database (pgvector) -->
+  <g transform="translate(420, 765)">
+    <rect width="360" height="135" rx="8" fill="#1E293B" stroke="#059669" stroke-width="1.5"/>
+    <rect x="15" y="15" width="28" height="28" rx="4" fill="#10B981"/>
+    <text x="29" y="34" font-size="14" text-anchor="middle" fill="#FFFFFF">⚡</text>
+    <text x="52" y="28" font-size="13" font-weight="700" fill="#F8FAFC">Vector Database (pgvector)</text>
+    <text x="52" y="42" font-size="9.5" fill="#34D399">PostgreSQL Vector Extension + HNSW Index</text>
+    
+    <line x1="15" y1="52" x2="345" y2="52" stroke="#334155" stroke-width="1"/>
+    
+    <text x="15" y="70" font-size="10" font-weight="600" fill="#E2E8F0">• document_chunks Table</text>
+    <text x="165" y="70" font-size="9" fill="#94A3B8">(id, document_id, content)</text>
+    
+    <text x="15" y="88" font-size="10" font-weight="600" fill="#34D399">• embedding halfvec(3072)</text>
+    <text x="165" y="88" font-size="9" fill="#94A3B8">16-bit float embeddings</text>
+    
+    <text x="15" y="106" font-size="10" font-weight="600" fill="#34D399">• HNSW Index</text>
+    <text x="95" y="106" font-size="9" fill="#94A3B8">USING hnsw (embedding halfvec_cosine_ops)</text>
+
+    <text x="15" y="122" font-size="8.5" fill="#64748B">Sub-millisecond Cosine Vector Retrieval (RPC Function)</text>
+  </g>
+
+  <!-- DB Component 3: Supabase Storage Bucket -->
+  <g transform="translate(810, 765)">
+    <rect width="340" height="135" rx="8" fill="#1E293B" stroke="#6366F1" stroke-width="1.5"/>
+    <rect x="15" y="15" width="28" height="28" rx="4" fill="#6366F1"/>
+    <text x="29" y="34" font-size="14" text-anchor="middle" fill="#FFFFFF">🗂️</text>
+    <text x="52" y="28" font-size="13" font-weight="700" fill="#F8FAFC">Raw Document Storage</text>
+    <text x="52" y="42" font-size="9.5" fill="#A5B4FC">Supabase Private Storage Bucket</text>
+    
+    <line x1="15" y1="52" x2="325" y2="52" stroke="#334155" stroke-width="1"/>
+    
+    <text x="15" y="70" font-size="10" font-weight="600" fill="#E2E8F0">• Bucket: "company-documents"</text>
+    <text x="15" y="88" font-size="9" fill="#94A3B8">Stores original binary uploads (PDF, DOCX, TXT)</text>
+    <text x="15" y="104" font-size="9" fill="#94A3B8">Organized under: uploads/{uuid}.{ext}</text>
+    <text x="15" y="122" font-size="8.5" fill="#64748B">Private Access Control (Service Role only)</text>
+  </g>
+
+</svg>
