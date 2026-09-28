@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     
     -- CHECK constraint to enforce allowed roles
-    CONSTRAINT users_role_check CHECK (role IN ('employee', 'admin'))
+    CONSTRAINT users_role_check CHECK (role IN ('employee', 'hr', 'manager', 'admin'))
 );
 
 -- Index on email for fast lookups during login

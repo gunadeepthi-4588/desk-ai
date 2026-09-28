@@ -155,17 +155,29 @@ function renderTickets() {
   showState('list');
 }
 
+// Auth Token Helper
+function getAuthHeaders(customHeaders = {}) {
+  const headers = { ...customHeaders };
+  const token = localStorage.getItem('deskai_token');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 // Fetch tickets from the API
 async function fetchTickets() {
   showState('loading');
   ticketCount.textContent = '';
 
   try {
-    const fetchUrl = currentUser && currentUser.role === 'admin'
+    const fetchUrl = currentUser && (currentUser.role === 'admin' || currentUser.role === 'hr' || currentUser.role === 'manager')
       ? `${API_BASE}`
-      : `${API_BASE}?employee_id=${encodeURIComponent(currentUser ? currentUser.id : '')}`;
+      : `${API_BASE}`;
 
-    let response = await fetch(fetchUrl);
+    let response = await fetch(fetchUrl, {
+      headers: getAuthHeaders()
+    });
 
     if (response.status === 401) {
       window.location.href = '/login';
@@ -182,17 +194,6 @@ async function fetchTickets() {
       throw new Error(data.error);
     }
 
-    // If employee has no tickets under their new UUID, also fetch legacy emp_001 demo tickets
-    if (data.length === 0 && currentUser && currentUser.role !== 'admin') {
-      const fallbackRes = await fetch(`${API_BASE}?employee_id=emp_001`);
-      if (fallbackRes.ok) {
-        const fallbackData = await fallbackRes.json();
-        if (Array.isArray(fallbackData) && fallbackData.length > 0) {
-          data = fallbackData;
-        }
-      }
-    }
-
     allTickets = data;
     renderTickets();
 
@@ -207,31 +208,39 @@ async function fetchTickets() {
 if (logoutBtn) {
   logoutBtn.addEventListener('click', async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await fetch('/api/auth/logout', { 
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
     } catch (_) {}
+    localStorage.removeItem('deskai_token');
     localStorage.removeItem('deskai_user');
     window.location.href = '/login';
   });
 }
 
-// Check session authentication and gate page
+// Check session / JWT authentication and gate page
 async function checkAuth() {
   try {
-    const res = await fetch('/api/auth/me');
+    const res = await fetch('/api/auth/me', {
+      headers: getAuthHeaders()
+    });
     if (!res.ok) {
       window.location.href = '/login';
       return;
     }
     currentUser = await res.json();
     if (userDisplay) {
-      const roleBadge = currentUser.role === 'admin' ? '🛡️ Admin' : '👤';
+      let roleBadge = '👤';
+      if (currentUser.role === 'admin') roleBadge = '🛡️ Admin';
+      else if (currentUser.role === 'hr' || currentUser.role === 'manager') roleBadge = '👥 HR';
       userDisplay.textContent = `${roleBadge} ${currentUser.name}`;
     }
-    if (currentUser.role === 'admin') {
+    if (currentUser.role === 'admin' || currentUser.role === 'hr' || currentUser.role === 'manager') {
       const navDash = document.getElementById('nav-dashboard');
       if (navDash) {
         navDash.href = '/admin-dashboard';
-        navDash.textContent = '🏠 Admin Dashboard';
+        navDash.textContent = currentUser.role === 'admin' ? '🏠 Admin Dashboard' : '🏠 HR Dashboard';
       }
       const navMy = document.getElementById('nav-my-tickets');
       if (navMy) {

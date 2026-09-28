@@ -20,9 +20,37 @@ DEMO_USERS = [
         "department": "Engineering"
     },
     {
+        "email": "employee@gmail.com",
+        "password": "demo1234",
+        "name": "Alex Employee (Gmail)",
+        "role": "employee",
+        "department": "Engineering"
+    },
+    {
+        "email": "hr@deskai.demo",
+        "password": "demo1234",
+        "name": "Morgan HR",
+        "role": "hr",
+        "department": "HR"
+    },
+    {
+        "email": "hr@gmail.com",
+        "password": "demo1234",
+        "name": "Morgan HR (Gmail)",
+        "role": "hr",
+        "department": "HR"
+    },
+    {
         "email": "admin@deskai.demo",
         "password": "demo1234",
         "name": "Sam Admin",
+        "role": "admin",
+        "department": None
+    },
+    {
+        "email": "admin@gmail.com",
+        "password": "demo1234",
+        "name": "Sam Admin (Gmail)",
         "role": "admin",
         "department": None
     }

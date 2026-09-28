@@ -172,6 +172,16 @@ function getTicketIdFromUrl() {
   return params.get('id');
 }
 
+// Auth Token Helper
+function getAuthHeaders(customHeaders = {}) {
+  const headers = { ...customHeaders };
+  const token = localStorage.getItem('deskai_token');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 // Handle Admin Status/Priority Update Submission
 async function handleAdminUpdate(e) {
   e.preventDefault();
@@ -187,9 +197,9 @@ async function handleAdminUpdate(e) {
   try {
     const res = await fetch(`${API_BASE}/${encodeURIComponent(currentTicket.id)}`, {
       method: 'PATCH',
-      headers: {
+      headers: getAuthHeaders({
         'Content-Type': 'application/json'
-      },
+      }),
       body: JSON.stringify({
         status: newStatus,
         priority: newPriority
@@ -228,7 +238,9 @@ async function fetchTicket() {
   showState('loading');
 
   try {
-    const response = await fetch(`${API_BASE}/${encodeURIComponent(ticketId)}`);
+    const response = await fetch(`${API_BASE}/${encodeURIComponent(ticketId)}`, {
+      headers: getAuthHeaders()
+    });
     
     if (response.status === 401) {
       window.location.href = '/login';
@@ -254,37 +266,48 @@ async function fetchTicket() {
 if (logoutBtn) {
   logoutBtn.addEventListener('click', async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await fetch('/api/auth/logout', { 
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
     } catch (_) {}
+    localStorage.removeItem('deskai_token');
     localStorage.removeItem('deskai_user');
     window.location.href = '/login';
   });
 }
 
-// Check session authentication and configure page
+// Check session / JWT authentication and configure page
 async function checkAuth() {
   try {
-    const res = await fetch('/api/auth/me');
+    const res = await fetch('/api/auth/me', {
+      headers: getAuthHeaders()
+    });
     if (!res.ok) {
       window.location.href = '/login';
       return;
     }
     currentUser = await res.json();
 
+    const role = (currentUser.role || '').toLowerCase();
+    const isStaff = (role === 'admin' || role === 'hr' || role === 'manager');
+
     if (userDisplay) {
-      const roleBadge = currentUser.role === 'admin' ? '🛡️ Admin' : '👤';
+      let roleBadge = '👤';
+      if (role === 'admin') roleBadge = '🛡️ Admin';
+      else if (role === 'hr' || role === 'manager') roleBadge = '👥 HR';
       userDisplay.textContent = `${roleBadge} ${currentUser.name}`;
     }
 
     // Role-dependent navigation adjustments
-    if (currentUser.role === 'admin') {
+    if (isStaff) {
       if (backLink) {
         backLink.href = '/admin-dashboard';
-        backLink.textContent = '← Back to Admin Dashboard';
+        backLink.textContent = role === 'admin' ? '← Back to Admin Dashboard' : '← Back to HR Dashboard';
       }
       if (navDashboard) {
         navDashboard.href = '/admin-dashboard';
-        navDashboard.textContent = '🏠 Admin Dashboard';
+        navDashboard.textContent = role === 'admin' ? '🏠 Admin Dashboard' : '🏠 HR Dashboard';
       }
       if (navMyTickets) {
         navMyTickets.textContent = '🎫 All Tickets';

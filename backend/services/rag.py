@@ -19,8 +19,6 @@ class RAGService:
                 raise RuntimeError("Google Gemini API client could not be created. Ensure GEMINI_API_KEY is set.")
 
     def answer_question(self, question: str) -> dict:
-        """Answer a question using retrieval+Gemini."""
-        self._ensure_client()
         """
         Retrieves relevant company knowledge chunks, checks thresholds,
         calls Gemini using system instructions with temperature=0.0, and returns answer + sources.
@@ -32,7 +30,8 @@ class RAGService:
             print(f"[ERROR] Context retrieval failed: {e}")
             return {
                 "answer": "I encountered an error querying the company knowledge base.",
-                "sources": []
+                "sources": [],
+                "is_answerable": False
             }
 
         # 2. Check if context is completely empty (no-answer threshold)
@@ -41,7 +40,8 @@ class RAGService:
             print("[INFO] No relevant context chunks passed the similarity threshold. Bypassing Gemini call.")
             return {
                 "answer": refusal_msg,
-                "sources": []
+                "sources": [],
+                "is_answerable": False
             }
 
         # 3. Formulate context block
@@ -67,7 +67,7 @@ class RAGService:
                 "document_id": chunk.get("document_id"),
                 "filename": filename,
                 "page_number": page_num,
-                "similarity": round(score, 4)
+                "similarity": round(score, 4) if score is not None else 0.0
             })
 
         context_text = "\n\n".join(context_parts)
@@ -93,6 +93,7 @@ class RAGService:
         # 5. Execute Gemini content generation
         print(f"[INFO] Invoking generative model '{self.model_name}' with temperature=0.0...")
         try:
+            self._ensure_client()
             response = self.client.models.generate_content(
                 model=self.model_name,
                 contents=user_content,
@@ -109,17 +110,20 @@ class RAGService:
             if refusal_msg.lower() in answer.lower():
                 return {
                     "answer": refusal_msg,
-                    "sources": []
+                    "sources": [],
+                    "is_answerable": False
                 }
                 
             return {
                 "answer": answer,
-                "sources": sources
+                "sources": sources,
+                "is_answerable": True
             }
 
         except Exception as e:
             print(f"[ERROR] Gemini generation failed: {e}")
             return {
                 "answer": "An error occurred while generating the answer.",
-                "sources": []
+                "sources": [],
+                "is_answerable": False
             }

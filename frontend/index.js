@@ -180,8 +180,18 @@ function removeLoadingBubble() {
   }
 }
 
+// Auth Token Helper
+function getAuthHeaders(customHeaders = {}) {
+  const headers = { ...customHeaders };
+  const token = localStorage.getItem('deskai_token');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 // Append AI Answer Bubble with Markdown and Sources
-function appendAIMessage(answer, sources = [], originalQuestion = '') {
+function appendAIMessage(answer, sources = [], originalQuestion = '', meta = {}) {
   const msgDiv = document.createElement('div');
   msgDiv.className = 'message message-ai';
 
@@ -193,8 +203,37 @@ function appendAIMessage(answer, sources = [], originalQuestion = '') {
   contentDiv.innerHTML = formatMarkdown(escapedText);
   msgDiv.appendChild(contentDiv);
 
-  // Check if no-answer fallback matched. Cleaned version to handle potential variations.
-  const isRefusal = (!sources || sources.length === 0) && answer.includes("I couldn't find reliable information about this in the available company knowledge");
+  // Resolution Status Badge
+  if (meta.resolved_via_ai) {
+    const statusDiv = document.createElement('div');
+    statusDiv.style.cssText = 'display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 4px 10px; background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; border-radius: 6px; font-size: 11px; font-weight: 600;';
+    statusDiv.innerHTML = '<span>✓</span> Resolved via AI (Verified Knowledge Base)';
+    msgDiv.appendChild(statusDiv);
+  }
+
+  // Automatic Human Escalation Card
+  if (meta.ticket_created && meta.ticket) {
+    const escCard = document.createElement('div');
+    escCard.style.cssText = 'margin-top: 12px; padding: 12px 14px; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px;';
+    const ticketRef = (meta.ticket.id || '').substring(0, 8);
+    escCard.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+        <span style="font-weight: 700; color: #92400E; font-size: 12px;">📋 Automatic Ticket Escalation</span>
+        <span style="background: #FEF3C7; color: #B45309; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 11px;">Status: ${escapeHTML(meta.ticket.status || 'Open')}</span>
+      </div>
+      <div style="font-size: 12px; color: #78350F; line-height: 1.5;">
+        <div><strong>Assigned Queue:</strong> ${escapeHTML(meta.ticket.department || 'HR')}</div>
+        <div><strong>Category:</strong> ${escapeHTML(meta.ticket.category || 'General')}</div>
+        <div><strong>Ticket Ref:</strong> <code>#${escapeHTML(ticketRef)}</code></div>
+      </div>
+      <div style="margin-top: 8px;">
+        <a href="/tickets" style="color: #B45309; font-weight: 600; font-size: 11.5px; text-decoration: underline;">View in My Tickets &rarr;</a>
+      </div>
+    `;
+    msgDiv.appendChild(escCard);
+  }
+
+  const isRefusal = (!sources || sources.length === 0) && (answer.includes("I couldn't find reliable information") || meta.ticket_created);
 
   // Render sources filename block (only if sources exist and it's not a refusal response)
   if (sources && sources.length > 0 && !isRefusal) {
@@ -234,8 +273,8 @@ function appendAIMessage(answer, sources = [], originalQuestion = '') {
     msgDiv.appendChild(sourcesDiv);
   }
 
-  // Render Raise a Support Ticket workflows based on resolution success
-  if (isRefusal) {
+  // Render manual Raise a Ticket button only if not already auto-created
+  if (isRefusal && !meta.ticket_created) {
     const fallbackDiv = document.createElement('div');
     fallbackDiv.className = 'fallback-cta';
 
@@ -251,8 +290,8 @@ function appendAIMessage(answer, sources = [], originalQuestion = '') {
     fallbackDiv.appendChild(btn);
 
     msgDiv.appendChild(fallbackDiv);
-  } else {
-    // Grounded answer: Render small not helpful feedback link
+  } else if (!isRefusal) {
+    // Grounded answer: Render small feedback link
     const feedbackDiv = document.createElement('div');
     feedbackDiv.className = 'grounded-feedback';
 
@@ -288,11 +327,16 @@ async function sendChatMessage(questionText) {
   try {
     const response = await fetch(API_URL, {
       method: 'POST',
-      headers: {
+      headers: getAuthHeaders({
         'Content-Type': 'application/json',
-      },
+      }),
       body: JSON.stringify({ question: questionText })
     });
+
+    if (response.status === 401) {
+      window.location.href = '/login';
+      return;
+    }
 
     if (!response.ok) {
       throw new Error(`Server returned status code ${response.status}`);
@@ -306,7 +350,13 @@ async function sendChatMessage(questionText) {
     if (result.error) {
       showError(`API Error: ${result.error}`);
     } else {
-      appendAIMessage(result.answer, result.sources, questionText);
+      appendAIMessage(result.answer, result.sources, questionText, {
+        resolved_via_ai: result.resolved_via_ai,
+        status: result.status,
+        resolution_source: result.resolution_source,
+        ticket_created: result.ticket_created,
+        ticket: result.ticket
+      });
     }
 
   } catch (error) {
@@ -458,9 +508,9 @@ async function handleTicketSubmit(e) {
   try {
     const res = await fetch('/api/tickets', {
       method: 'POST',
-      headers: {
+      headers: getAuthHeaders({
         'Content-Type': 'application/json'
-      },
+      }),
       body: JSON.stringify({
         department: dept,
         category: category,
@@ -589,35 +639,43 @@ window.addEventListener('click', (e) => {
 if (logoutBtn) {
   logoutBtn.addEventListener('click', async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await fetch('/api/auth/logout', { 
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
     } catch (_) {}
+    localStorage.removeItem('deskai_token');
     localStorage.removeItem('deskai_user');
     window.location.href = '/login';
   });
 }
 
-// Check session authentication and gate page
+// Check session / JWT authentication and gate page
 async function checkAuth() {
   try {
-    const res = await fetch('/api/auth/me');
+    const res = await fetch('/api/auth/me', {
+      headers: getAuthHeaders()
+    });
     if (!res.ok) {
       window.location.href = '/login';
       return;
     }
     currentUser = await res.json();
     if (userDisplay) {
-      const roleBadge = currentUser.role === 'admin' ? '🛡️ Admin' : '👤';
+      let roleBadge = '👤';
+      if (currentUser.role === 'admin') roleBadge = '🛡️ Admin';
+      else if (currentUser.role === 'hr' || currentUser.role === 'manager') roleBadge = '👥 HR';
       userDisplay.textContent = `${roleBadge} ${currentUser.name}`;
     }
-    if (currentUser.role === 'admin') {
+    if (currentUser.role === 'admin' || currentUser.role === 'hr' || currentUser.role === 'manager') {
       const navDash = document.getElementById('nav-dashboard');
       if (navDash) {
         navDash.href = '/admin-dashboard';
-        navDash.textContent = '🏠 Admin Dashboard';
+        navDash.textContent = currentUser.role === 'admin' ? '🏠 Admin Dashboard' : '🏠 HR Dashboard';
       }
       const navMy = document.getElementById('nav-my-tickets');
       if (navMy) {
-        navMy.textContent = '🎫 All Tickets';
+        navMy.textContent = '🎫 Manage Tickets';
       }
     }
   } catch (err) {

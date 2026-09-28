@@ -144,6 +144,16 @@ function renderRecentTickets(tickets) {
   });
 }
 
+// Auth Token Helper
+function getAuthHeaders(customHeaders = {}) {
+  const headers = { ...customHeaders };
+  const token = localStorage.getItem('deskai_token');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 // Fetch tickets for current employee
 async function loadDashboardData() {
   recentLoading.classList.remove('hidden');
@@ -151,8 +161,10 @@ async function loadDashboardData() {
   recentList.classList.add('hidden');
 
   try {
-    const fetchUrl = `${API_BASE}?employee_id=${encodeURIComponent(currentUser.id)}`;
-    let response = await fetch(fetchUrl);
+    const fetchUrl = `${API_BASE}`;
+    let response = await fetch(fetchUrl, {
+      headers: getAuthHeaders()
+    });
 
     if (response.status === 401) {
       window.location.href = '/login';
@@ -164,18 +176,6 @@ async function loadDashboardData() {
     }
 
     let data = await response.json();
-
-    // If employee has no tickets under new UUID yet, load fallback demo tickets
-    if (data.length === 0) {
-      const fallbackRes = await fetch(`${API_BASE}?employee_id=emp_001`);
-      if (fallbackRes.ok) {
-        const fallbackData = await fallbackRes.json();
-        if (Array.isArray(fallbackData) && fallbackData.length > 0) {
-          data = fallbackData;
-        }
-      }
-    }
-
     updateStats(data);
     renderRecentTickets(data);
 
@@ -186,10 +186,12 @@ async function loadDashboardData() {
   }
 }
 
-// Check session authentication and gate page
+// Check session / JWT authentication and gate page
 async function checkAuth() {
   try {
-    const res = await fetch('/api/auth/me');
+    const res = await fetch('/api/auth/me', {
+      headers: getAuthHeaders()
+    });
     if (!res.ok) {
       window.location.href = '/login';
       return;
@@ -197,8 +199,9 @@ async function checkAuth() {
 
     currentUser = await res.json();
 
-    // If admin lands on employee dashboard, redirect to admin dashboard
-    if (currentUser.role === 'admin') {
+    // If admin or HR lands on employee dashboard, redirect to admin dashboard
+    const role = (currentUser.role || '').toLowerCase();
+    if (role === 'admin' || role === 'hr' || role === 'manager') {
       window.location.href = '/admin-dashboard';
       return;
     }
@@ -225,8 +228,12 @@ async function checkAuth() {
 if (logoutBtn) {
   logoutBtn.addEventListener('click', async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await fetch('/api/auth/logout', { 
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
     } catch (_) {}
+    localStorage.removeItem('deskai_token');
     localStorage.removeItem('deskai_user');
     window.location.href = '/login';
   });

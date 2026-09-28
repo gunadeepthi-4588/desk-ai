@@ -8,12 +8,22 @@ const loginError = document.getElementById('login-error');
 const loginErrorMessage = document.getElementById('login-error-message');
 
 const demoEmployeeBtn = document.getElementById('demo-employee-btn');
+const demoHrBtn = document.getElementById('demo-hr-btn');
 const demoAdminBtn = document.getElementById('demo-admin-btn');
 
 // Auto-fill demo credentials
 if (demoEmployeeBtn) {
   demoEmployeeBtn.addEventListener('click', () => {
-    loginEmail.value = 'employee@deskai.demo';
+    loginEmail.value = 'employee@gmail.com';
+    loginPassword.value = 'demo1234';
+    hideError();
+    loginPassword.focus();
+  });
+}
+
+if (demoHrBtn) {
+  demoHrBtn.addEventListener('click', () => {
+    loginEmail.value = 'hr@gmail.com';
     loginPassword.value = 'demo1234';
     hideError();
     loginPassword.focus();
@@ -22,7 +32,7 @@ if (demoEmployeeBtn) {
 
 if (demoAdminBtn) {
   demoAdminBtn.addEventListener('click', () => {
-    loginEmail.value = 'admin@deskai.demo';
+    loginEmail.value = 'admin@gmail.com';
     loginPassword.value = 'demo1234';
     hideError();
     loginPassword.focus();
@@ -68,9 +78,16 @@ async function handleLogin(e) {
       throw new Error(data.error || 'Login failed. Please check your credentials.');
     }
 
-    // Success: store user in localStorage for quick display and redirect based on role
-    localStorage.setItem('deskai_user', JSON.stringify(data));
-    if (data.role === 'admin') {
+    // Success: store JWT token and user profile in localStorage
+    if (data.token) {
+      localStorage.setItem('deskai_token', data.token);
+    }
+    const userProfile = data.user || data;
+    localStorage.setItem('deskai_user', JSON.stringify(userProfile));
+
+    // Redirect based on role
+    const role = (userProfile.role || '').toLowerCase();
+    if (role === 'admin' || role === 'hr' || role === 'manager') {
       window.location.href = '/admin-dashboard';
     } else {
       window.location.href = '/';
@@ -89,12 +106,19 @@ loginForm.addEventListener('submit', handleLogin);
 
 // If already logged in, redirect to appropriate home
 async function checkExistingSession() {
+  const token = localStorage.getItem('deskai_token');
+  const headers = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   try {
-    const res = await fetch('/api/auth/me');
+    const res = await fetch('/api/auth/me', { headers });
     if (res.ok) {
       const data = await res.json();
       localStorage.setItem('deskai_user', JSON.stringify(data));
-      if (data.role === 'admin') {
+      const role = (data.role || '').toLowerCase();
+      if (role === 'admin' || role === 'hr' || role === 'manager') {
         window.location.href = '/admin-dashboard';
       } else {
         window.location.href = '/';

@@ -1,6 +1,6 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session, g
 from backend.supabase_client import get_supabase_client
-from backend.routes.auth import login_required
+from backend.routes.auth import login_required, roles_required
 from postgrest.exceptions import APIError
 
 tickets_bp = Blueprint('tickets', __name__, url_prefix='/api/tickets')
@@ -33,8 +33,7 @@ def create_ticket():
     if missing_fields:
         return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
 
-    # Extract and clean values
-    user = session.get('user', {})
+    user = getattr(g, 'user', None) or session.get('user', {})
     employee_id = str(user.get('id') or data.get('employee_id', '')).strip()
     department = str(data['department']).strip()
     category = str(data['category']).strip()
@@ -111,9 +110,12 @@ def _enrich_tickets_with_user_info(tickets_data, client):
         if emp_id in user_map:
             t['employee_name'] = user_map[emp_id].get('name') or 'Unknown Employee'
             t['employee_email'] = user_map[emp_id].get('email') or ''
-        elif emp_id == 'emp_001':
+        elif emp_id == '00000000-0000-0000-0000-000000000001' or emp_id == 'emp_001':
             t['employee_name'] = 'Alex Employee (Demo)'
             t['employee_email'] = 'employee@deskai.demo'
+        elif emp_id == '00000000-0000-0000-0000-000000000002':
+            t['employee_name'] = 'Morgan HR (Demo)'
+            t['employee_email'] = 'hr@deskai.demo'
         else:
             t['employee_name'] = 'Employee'
             t['employee_email'] = ''
@@ -126,27 +128,42 @@ def _enrich_tickets_with_user_info(tickets_data, client):
 def list_tickets():
     """
     GET /api/tickets
-    Query Parameters:
-        - employee_id (optional)
-        - department (optional)
-        - status (optional)
+    Role-based filtering:
+        - Employee: strictly filtered to their own tickets.
+        - HR / Manager: can view HR queue or filtered tickets.
+        - Admin: full access to all tickets.
     """
     client = get_supabase_client()
     if not client:
         return jsonify({"error": "Database service is currently unavailable."}), 500
 
+    user = getattr(g, 'user', None) or session.get('user', {})
+    user_role = user.get('role', 'employee')
+    user_id = user.get('id')
+
     # Read optional query filters
-    employee_id = request.args.get('employee_id')
+    requested_emp_id = request.args.get('employee_id')
     department = request.args.get('department')
     status = request.args.get('status')
 
     for attempt in range(3):
         try:
             query = client.table('tickets').select('*')
-            if employee_id:
-                query = query.eq('employee_id', employee_id.strip())
-            if department:
-                query = query.eq('department', department.strip())
+            
+            # Enforce role boundary
+            if user_role == 'employee':
+                query = query.eq('employee_id', user_id)
+            else:
+                # Admins and HR can optionally filter by employee_id
+                if requested_emp_id:
+                    query = query.eq('employee_id', requested_emp_id.strip())
+                # HR users without an explicit department filter can see all or HR queue
+                if department:
+                    query = query.eq('department', department.strip())
+                elif user_role in ('hr', 'manager') and not requested_emp_id and not status:
+                    # By default HR can see all or filter
+                    pass
+
             if status:
                 query = query.eq('status', status.strip())
                 
@@ -168,21 +185,31 @@ def list_tickets():
 def get_ticket(id):
     """
     GET /api/tickets/<id>
+    Enforces that employees can only retrieve their own tickets.
     """
     client = get_supabase_client()
     if not client:
         return jsonify({"error": "Database service is currently unavailable."}), 500
+
+    user = getattr(g, 'user', None) or session.get('user', {})
+    user_role = user.get('role', 'employee')
+    user_id = user.get('id')
 
     try:
         res = client.table('tickets').select('*').eq('id', id).execute()
         if not res.data:
             return jsonify({"error": f"Ticket with ID {id} not found."}), 404
             
-        enriched_data = _enrich_tickets_with_user_info(res.data, client)
+        ticket = res.data[0]
+        
+        # Enforce that an employee cannot inspect another employee's ticket
+        if user_role == 'employee' and str(ticket.get('employee_id')) != str(user_id):
+            return jsonify({"error": "Access forbidden: You cannot view tickets belonging to another employee."}), 403
+
+        enriched_data = _enrich_tickets_with_user_info([ticket], client)
         return jsonify(enriched_data[0]), 200
         
     except APIError as e:
-        # Catch invalid UUID format error
         if "invalid input syntax for type uuid" in e.message.lower() or "22P02" in str(getattr(e, "code", "")):
             return jsonify({"error": f"Invalid ticket ID format: {id}"}), 400
         return jsonify({"error": e.message}), 400
@@ -195,12 +222,14 @@ def get_ticket(id):
 def update_ticket(id):
     """
     PATCH /api/tickets/<id>
-    Request body:
-        {
-            "status": "...",
-            "priority": "..."
-        }
+    Only HR, Manager, and Admin can update ticket status or priority.
     """
+    user = getattr(g, 'user', None) or session.get('user', {})
+    user_role = user.get('role', 'employee')
+
+    if user_role not in ('admin', 'hr', 'manager'):
+        return jsonify({"error": "Access forbidden: Employees are not authorized to update ticket status or priority."}), 403
+
     data = request.get_json(silent=True)
     if not data or not isinstance(data, dict):
         return jsonify({"error": "Invalid request. Body must be a JSON object."}), 400

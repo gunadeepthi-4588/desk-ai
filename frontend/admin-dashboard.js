@@ -274,15 +274,32 @@ function renderMobileCards(tickets) {
   adminCardsContainer.classList.remove('hidden');
 }
 
-// Fetch all tickets across all employees
+// Auth Token Helper
+function getAuthHeaders(customHeaders = {}) {
+  const headers = { ...customHeaders };
+  const token = localStorage.getItem('deskai_token');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
+// Fetch all tickets across all employees / HR queue
 async function fetchAdminTickets() {
   showState('loading');
 
   try {
-    const res = await fetch(API_BASE);
+    const res = await fetch(API_BASE, {
+      headers: getAuthHeaders()
+    });
 
     if (res.status === 401) {
       window.location.href = '/login';
+      return;
+    }
+
+    if (res.status === 403) {
+      window.location.href = '/';
       return;
     }
 
@@ -324,7 +341,6 @@ function updateViewMode(tickets) {
   }
 }
 
-
 // Reset all filter controls
 function resetFilters() {
   searchInput.value = '';
@@ -337,7 +353,9 @@ function resetFilters() {
 // Auth Verification and Role Guard
 async function checkAuth() {
   try {
-    const res = await fetch('/api/auth/me');
+    const res = await fetch('/api/auth/me', {
+      headers: getAuthHeaders()
+    });
     if (!res.ok) {
       window.location.href = '/login';
       return;
@@ -345,14 +363,22 @@ async function checkAuth() {
 
     currentUser = await res.json();
 
-    // STRICT ROLE GUARD: Redirect non-admins to employee dashboard
-    if (currentUser.role !== 'admin') {
+    // STRICT ROLE GUARD: Allow Admin and HR/Manager roles
+    const role = (currentUser.role || '').toLowerCase();
+    if (role !== 'admin' && role !== 'hr' && role !== 'manager') {
       window.location.href = '/';
       return;
     }
 
     if (userDisplay) {
-      userDisplay.textContent = `🛡️ ${currentUser.name}`;
+      const icon = role === 'admin' ? '🛡️' : '👥';
+      userDisplay.textContent = `${icon} ${currentUser.name} (${role.toUpperCase()})`;
+    }
+
+    // If HR manager, customize page title/header if present
+    const headerTitle = document.querySelector('.admin-header h1, .dashboard-title');
+    if (headerTitle && (role === 'hr' || role === 'manager')) {
+      headerTitle.textContent = 'HR & Admin Ticket Management';
     }
 
     fetchAdminTickets();
@@ -367,8 +393,12 @@ async function checkAuth() {
 if (logoutBtn) {
   logoutBtn.addEventListener('click', async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await fetch('/api/auth/logout', { 
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
     } catch (_) {}
+    localStorage.removeItem('deskai_token');
     localStorage.removeItem('deskai_user');
     window.location.href = '/login';
   });
@@ -387,7 +417,6 @@ refreshBtn.addEventListener('click', fetchAdminTickets);
 window.addEventListener('resize', () => {
   updateViewMode(lastFiltered);
 });
-
 
 // Initial auth check
 checkAuth();

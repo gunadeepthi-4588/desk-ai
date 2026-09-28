@@ -13,7 +13,9 @@ class Config:
     FLASK_ENV = os.environ.get("FLASK_ENV", "development")
     DEBUG = FLASK_ENV == "development"
     PORT = int(os.environ.get("PORT", 5000))
-    SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "deskai-session-secret-key-2026")
+    SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", "deskai-enterprise-jwt-session-secret-key-2026-v2")
+    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", SECRET_KEY)
+    JWT_EXPIRATION_HOURS = int(os.environ.get("JWT_EXPIRATION_HOURS", 24))
     
     # Gemini Configuration
     GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
