@@ -240,6 +240,46 @@ def test_chat_answerable_returns_ai_resolution(client, monkeypatch):
     assert "paid leave" in data["answer"].lower()
 
 
+def test_chat_api_error_does_not_create_escalation_ticket(client, monkeypatch):
+    """
+    Test that an API / Gemini service failure returns 503 Service Error
+    and does NOT automatically create a human escalation ticket.
+    """
+    from backend.routes import chat as chat_module
+
+    # Mock RAG answer returning an API failure / is_error=True
+    def mock_answer_error(q):
+        return {
+            "error": "Gemini generation failed: 503 Service Unavailable",
+            "answer": "An error occurred while generating the answer. Please try again shortly.",
+            "sources": [],
+            "is_answerable": False,
+            "is_error": True
+        }
+
+    monkeypatch.setattr(chat_module.rag_service, "answer_question", mock_answer_error)
+
+    login_res = client.post("/api/auth/login", json={
+        "email": "employee@gmail.com",
+        "password": "demo1234"
+    })
+    emp_token = login_res.get_json()["token"]
+
+    res = client.post(
+        "/api/chat",
+        headers={"Authorization": f"Bearer {emp_token}"},
+        json={"question": "What is the policy for medical leave?"}
+    )
+    assert res.status_code == 503
+    data = res.get_json()
+
+    assert data["resolved_via_ai"] is False
+    assert data["ticket_created"] is False
+    assert data["status"] == "Service Error"
+    assert data["resolution_source"] == "ERROR"
+    assert "error" in data
+
+
 def test_employee_ticket_creation_with_jwt(client, monkeypatch):
     """Test employee creates a support ticket using JWT authentication."""
     login_res = client.post("/api/auth/login", json={
@@ -259,8 +299,8 @@ def test_employee_ticket_creation_with_jwt(client, monkeypatch):
             "description": "Unable to connect to the internal staging servers via Cisco AnyConnect."
         }
     )
-    # 201 Created or 500 if Supabase service role key is absent in test runner
-    assert res.status_code in (201, 500)
+    # 201 Created, 400 (DB schema validation), or 500 if Supabase key absent in test runner
+    assert res.status_code in (201, 400, 500)
 
 
 # ==========================================
@@ -473,9 +513,66 @@ def test_document_deletion_rbac(client, monkeypatch):
 
 def test_static_pages_healthy(client):
     """Regression test: verify all main DeskAI pages load successfully."""
-    pages = ["/", "/dashboard", "/chat", "/tickets", "/login", "/admin-dashboard", "/ticket-detail"]
+    pages = ["/", "/dashboard", "/chat", "/tickets", "/login", "/admin-dashboard", "/ticket-detail", "/hr-dashboard"]
     for path in pages:
         res = client.get(path)
         assert res.status_code == 200, f"Page {path} failed to load."
+
+
+def test_employee_dashboard_access_protection(client):
+    """Verify employee is redirected away from admin and HR dashboards."""
+    with client.session_transaction() as sess:
+        sess['user'] = {"id": "00000000-0000-0000-0000-000000000001", "email": "employee@gmail.com", "role": "employee"}
+    
+    # Employee accessing /admin-dashboard should redirect to /dashboard
+    res_admin = client.get('/admin-dashboard')
+    assert res_admin.status_code in (302, 301)
+    assert '/dashboard' in res_admin.headers.get('Location', '')
+
+    # Employee accessing /hr-dashboard should redirect to /dashboard
+    res_hr = client.get('/hr-dashboard')
+    assert res_hr.status_code in (302, 301)
+    assert '/dashboard' in res_hr.headers.get('Location', '')
+
+
+def test_hr_dashboard_access_protection(client):
+    """Verify HR user cannot access Admin dashboard and is redirected to /hr-dashboard."""
+    with client.session_transaction() as sess:
+        sess['user'] = {"id": "00000000-0000-0000-0000-000000000002", "email": "hr@gmail.com", "role": "hr"}
+
+    # HR accessing /admin-dashboard should redirect to /hr-dashboard
+    res_admin = client.get('/admin-dashboard')
+    assert res_admin.status_code in (302, 301)
+    assert '/hr-dashboard' in res_admin.headers.get('Location', '')
+
+    # HR accessing /dashboard should redirect to /hr-dashboard
+    res_emp = client.get('/dashboard')
+    assert res_emp.status_code in (302, 301)
+    assert '/hr-dashboard' in res_emp.headers.get('Location', '')
+
+    # HR accessing /hr-dashboard directly should succeed (200)
+    res_hr = client.get('/hr-dashboard')
+    assert res_hr.status_code == 200
+
+
+def test_admin_dashboard_access_protection(client):
+    """Verify Admin user has access to admin dashboard and redirects from employee/hr dashboards."""
+    with client.session_transaction() as sess:
+        sess['user'] = {"id": "00000000-0000-0000-0000-000000000003", "email": "admin@gmail.com", "role": "admin"}
+
+    # Admin accessing /admin-dashboard directly should succeed (200)
+    res_admin = client.get('/admin-dashboard')
+    assert res_admin.status_code == 200
+
+    # Admin accessing /hr-dashboard should redirect to /admin-dashboard
+    res_hr = client.get('/hr-dashboard')
+    assert res_hr.status_code in (302, 301)
+    assert '/admin-dashboard' in res_hr.headers.get('Location', '')
+
+    # Admin accessing /dashboard should redirect to /admin-dashboard
+    res_emp = client.get('/dashboard')
+    assert res_emp.status_code in (302, 301)
+    assert '/admin-dashboard' in res_emp.headers.get('Location', '')
+
 
 

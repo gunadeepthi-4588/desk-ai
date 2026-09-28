@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect, session
 from backend.config import Config
 from backend.routes import register_routes
 
@@ -17,11 +17,30 @@ def create_app() -> Flask:
     # Register blueprints (routes)
     register_routes(app)
     
-    # Serve dashboard.html at root / and /dashboard
+    # Serve dashboard.html at root / and /dashboard (Employee Dashboard)
     @app.route('/')
     @app.route('/dashboard')
     def dashboard_page():
+        user = session.get('user')
+        if user:
+            role = (user.get('role') or '').lower()
+            if role == 'admin':
+                return redirect('/admin-dashboard')
+            elif role == 'hr' or role == 'manager':
+                return redirect('/hr-dashboard')
         return app.send_static_file('dashboard.html')
+
+    # Serve hr-dashboard.html at /hr-dashboard (HR Dashboard)
+    @app.route('/hr-dashboard')
+    def hr_dashboard_page():
+        user = session.get('user')
+        if user:
+            role = (user.get('role') or '').lower()
+            if role == 'admin':
+                return redirect('/admin-dashboard')
+            elif role == 'employee':
+                return redirect('/dashboard')
+        return app.send_static_file('hr-dashboard.html')
 
     # Serve index.html at /chat
     @app.route('/chat')
@@ -43,10 +62,17 @@ def create_app() -> Flask:
     def ticket_detail_page():
         return app.send_static_file('ticket-detail.html')
 
-    # Serve admin-dashboard.html at /admin-dashboard and /admin
+    # Serve admin-dashboard.html at /admin-dashboard and /admin (Admin Dashboard)
     @app.route('/admin-dashboard')
     @app.route('/admin')
     def admin_dashboard_page():
+        user = session.get('user')
+        if user:
+            role = (user.get('role') or '').lower()
+            if role == 'hr' or role == 'manager':
+                return redirect('/hr-dashboard')
+            elif role == 'employee':
+                return redirect('/dashboard')
         return app.send_static_file('admin-dashboard.html')
 
     # Add CORS headers to all responses

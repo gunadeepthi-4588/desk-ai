@@ -44,20 +44,19 @@ USING hnsw (embedding halfvec_cosine_ops);
 ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.document_chunks ENABLE ROW LEVEL SECURITY;
 
--- 1. Documents: Read-only access for authenticated users (employees/admin)
-CREATE POLICY "Allow authenticated read access to documents" 
+-- 1. Documents: Allow backend operations
+CREATE POLICY "Allow all operations on documents" 
 ON public.documents 
-FOR SELECT 
-TO authenticated 
-USING (true);
+FOR ALL 
+TO public 
+USING (true)
+WITH CHECK (true);
 
--- 2. Document Chunks: Read-only access for authenticated users
-CREATE POLICY "Allow authenticated read access to document_chunks" 
+-- 2. Document Chunks: Allow backend operations
+CREATE POLICY "Allow all operations on document_chunks" 
 ON public.document_chunks 
-FOR SELECT 
-TO authenticated 
-USING (true);
+FOR ALL 
+TO public 
+USING (true)
+WITH CHECK (true);
 
--- Note: No INSERT, UPDATE, or DELETE policies are created.
--- This restricts write operations exclusively to the database owner and the 
--- service_role role (which automatically bypasses RLS in Supabase).

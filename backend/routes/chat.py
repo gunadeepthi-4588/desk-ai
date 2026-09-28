@@ -143,7 +143,20 @@ def chat():
     try:
         # Run RAG answer pipeline
         rag_result = rag_service.answer_question(question_clean)
+        is_error = rag_result.get("is_error", False)
         is_answerable = rag_result.get("is_answerable", False)
+
+        if is_error:
+            # CASE C — API / Database service error (do not create an escalation ticket)
+            error_message = rag_result.get("answer", "An error occurred while communicating with the AI service.")
+            return jsonify({
+                "error": error_message,
+                "details": rag_result.get("error", "Service unavailable"),
+                "resolved_via_ai": False,
+                "status": "Service Error",
+                "resolution_source": "ERROR",
+                "ticket_created": False
+            }), 503
 
         if is_answerable:
             # CASE A — AI CAN ANSWER

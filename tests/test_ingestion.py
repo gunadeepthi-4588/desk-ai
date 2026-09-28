@@ -1,11 +1,10 @@
 import os
+import sys
+from dotenv import load_dotenv
+load_dotenv()
 import pytest
 if not (os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_KEY") and os.getenv("GEMINI_API_KEY")):
     pytest.skip("Supabase/GEMINI credentials not set; skipping integration tests.", allow_module_level=True)
-import sys
-import time
-import requests
-from dotenv import load_dotenv
 
 # Ensure backend can be imported
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

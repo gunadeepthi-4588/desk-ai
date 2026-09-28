@@ -66,7 +66,7 @@ DeskAI delivers a self‑contained Flask backend, a vanilla‑HTML/CSS/JavaScrip
 3. **RAG / AI Query Pipeline (Flow 2)**:
    - **Query Embedding**: Natural language user questions from the dashboard are embedded using Gemini (`gemini-embedding-001`).
    - **Vector Similarity Search**: Cosine distance is queried against the `document_chunks` table using an HNSW index (`halfvec_cosine_ops`) via the `match_document_chunks` RPC function with a default similarity threshold of `0.40`.
-   - **Strict Grounded Generation**: Retrieved context is injected into Google Gemini (`gemini-3.5-flash`) with temperature `0.0` and strict system instructions to eliminate hallucinations.
+   - **Strict Grounded Generation**: Retrieved context is injected into Google Gemini (`gemini-3.8-flash`) with temperature `0.0` and strict system instructions to eliminate hallucinations.
    - **Cited Response**: Grounded answers with cited source documents and page numbers are returned to the DeskAI dashboard UI.
 
 4. **Database & Storage Layer**:

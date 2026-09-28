@@ -1,4 +1,5 @@
 import os
+import time
 from google import genai
 from google.genai import types
 from backend.services.retrieval import RetrievalService
@@ -8,7 +9,7 @@ class RAGService:
         self.retrieval_service = retrieval_service or RetrievalService()
         self.client = None  # Lazy client, will be created on first call
         # Default generative model
-        self.model_name = os.environ.get("GEMINI_GENERATIVE_MODEL", "gemini-3.5-flash")
+        self.model_name = os.environ.get("GEMINI_GENERATIVE_MODEL", "gemini-3.1-flash-lite")
 
     def _ensure_client(self):
         """Create genai.Client if not already created. Raises clear error if API key missing."""
@@ -29,9 +30,11 @@ class RAGService:
         except Exception as e:
             print(f"[ERROR] Context retrieval failed: {e}")
             return {
+                "error": f"Context retrieval failed: {str(e)}",
                 "answer": "I encountered an error querying the company knowledge base.",
                 "sources": [],
-                "is_answerable": False
+                "is_answerable": False,
+                "is_error": True
             }
 
         # 2. Check if context is completely empty (no-answer threshold)
@@ -41,7 +44,8 @@ class RAGService:
             return {
                 "answer": refusal_msg,
                 "sources": [],
-                "is_answerable": False
+                "is_answerable": False,
+                "is_error": False
             }
 
         # 3. Formulate context block
@@ -90,40 +94,51 @@ class RAGService:
             f"Question: {question}"
         )
 
-        # 5. Execute Gemini content generation
+        # 5. Execute Gemini content generation with retry for transient API spikes
         print(f"[INFO] Invoking generative model '{self.model_name}' with temperature=0.0...")
-        try:
-            self._ensure_client()
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=user_content,
-                config=types.GenerateContentConfig(
-                    system_instruction=system_instruction,
-                    temperature=0.0
+        max_attempts = 2
+        for attempt in range(1, max_attempts + 1):
+            try:
+                self._ensure_client()
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=user_content,
+                    config=types.GenerateContentConfig(
+                        system_instruction=system_instruction,
+                        temperature=0.0
+                    )
                 )
-            )
-            
-            answer = response.text.strip()
-            
-            # 6. Post-process no-answer cases
-            # If the model itself decided it didn't find the answer (or replied with refusal)
-            if refusal_msg.lower() in answer.lower():
-                return {
-                    "answer": refusal_msg,
-                    "sources": [],
-                    "is_answerable": False
-                }
                 
-            return {
-                "answer": answer,
-                "sources": sources,
-                "is_answerable": True
-            }
+                answer = response.text.strip()
+                
+                # 6. Post-process no-answer cases
+                # If the model itself decided it didn't find the answer (or replied with refusal)
+                if refusal_msg.lower() in answer.lower():
+                    return {
+                        "answer": refusal_msg,
+                        "sources": [],
+                        "is_answerable": False,
+                        "is_error": False
+                    }
+                    
+                return {
+                    "answer": answer,
+                    "sources": sources,
+                    "is_answerable": True,
+                    "is_error": False
+                }
 
-        except Exception as e:
-            print(f"[ERROR] Gemini generation failed: {e}")
-            return {
-                "answer": "An error occurred while generating the answer.",
-                "sources": [],
-                "is_answerable": False
-            }
+            except Exception as e:
+                err_str = str(e)
+                if attempt < max_attempts and ("503" in err_str or "unavailable" in err_str.lower() or "resource" in err_str.lower()):
+                    print(f"[WARN] Gemini generation attempt {attempt} hit transient error ({e}). Retrying in 1s...")
+                    time.sleep(1.0)
+                    continue
+                print(f"[ERROR] Gemini generation failed: {e}")
+                return {
+                    "error": f"Gemini generation failed: {str(e)}",
+                    "answer": "An error occurred while generating the answer. Please try again shortly.",
+                    "sources": [],
+                    "is_answerable": False,
+                    "is_error": True
+                }

@@ -87,10 +87,12 @@ async function handleLogin(e) {
 
     // Redirect based on role
     const role = (userProfile.role || '').toLowerCase();
-    if (role === 'admin' || role === 'hr' || role === 'manager') {
+    if (role === 'admin') {
       window.location.href = '/admin-dashboard';
+    } else if (role === 'hr' || role === 'manager') {
+      window.location.href = '/hr-dashboard';
     } else {
-      window.location.href = '/';
+      window.location.href = '/dashboard';
     }
 
   } catch (err) {
@@ -118,10 +120,12 @@ async function checkExistingSession() {
       const data = await res.json();
       localStorage.setItem('deskai_user', JSON.stringify(data));
       const role = (data.role || '').toLowerCase();
-      if (role === 'admin' || role === 'hr' || role === 'manager') {
+      if (role === 'admin') {
         window.location.href = '/admin-dashboard';
+      } else if (role === 'hr' || role === 'manager') {
+        window.location.href = '/hr-dashboard';
       } else {
-        window.location.href = '/';
+        window.location.href = '/dashboard';
       }
     }
   } catch (_) {

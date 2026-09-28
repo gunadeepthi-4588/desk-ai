@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 # Load env variables from .env file using absolute path before imports
 base_dir = os.path.dirname(os.path.abspath(__file__))
 dotenv_path = os.path.join(base_dir, '.env')
-load_dotenv(dotenv_path)
+load_dotenv(dotenv_path, override=True)
 
 from google import genai
 from backend import create_app
@@ -15,9 +15,10 @@ print("[INFO] Connecting to Google servers... Please wait...")
 try:
     # This checks your computer system directly for the key
     client = genai.Client()
+    startup_model = os.environ.get("GEMINI_GENERATIVE_MODEL", "gemini-3.1-flash-lite")
     
     response = client.models.generate_content(
-        model='gemini-3.6-flash',
+        model=startup_model,
         contents='Say the word "Success" and nothing else.',
     )
     

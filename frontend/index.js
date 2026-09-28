@@ -667,12 +667,21 @@ async function checkAuth() {
       else if (currentUser.role === 'hr' || currentUser.role === 'manager') roleBadge = '👥 HR';
       userDisplay.textContent = `${roleBadge} ${currentUser.name}`;
     }
-    if (currentUser.role === 'admin' || currentUser.role === 'hr' || currentUser.role === 'manager') {
-      const navDash = document.getElementById('nav-dashboard');
-      if (navDash) {
+    const role = (currentUser.role || '').toLowerCase();
+    const navDash = document.getElementById('nav-dashboard');
+    if (navDash) {
+      if (role === 'admin') {
         navDash.href = '/admin-dashboard';
-        navDash.textContent = currentUser.role === 'admin' ? '🏠 Admin Dashboard' : '🏠 HR Dashboard';
+        navDash.textContent = '🏠 Admin Dashboard';
+      } else if (role === 'hr' || role === 'manager') {
+        navDash.href = '/hr-dashboard';
+        navDash.textContent = '🏠 HR Dashboard';
+      } else {
+        navDash.href = '/dashboard';
+        navDash.textContent = '🏠 Dashboard';
       }
+    }
+    if (role === 'admin' || role === 'hr' || role === 'manager') {
       const navMy = document.getElementById('nav-my-tickets');
       if (navMy) {
         navMy.textContent = '🎫 Manage Tickets';

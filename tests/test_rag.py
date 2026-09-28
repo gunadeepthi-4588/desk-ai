@@ -1,9 +1,10 @@
 import os
+import sys
+from dotenv import load_dotenv
+load_dotenv()
 import pytest
 if not (os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_KEY") and os.getenv("GEMINI_API_KEY")):
     pytest.skip("Supabase/GEMINI credentials not set; skipping integration tests.", allow_module_level=True)
-import sys
-from dotenv import load_dotenv
 
 # Ensure backend can be imported
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -81,13 +82,18 @@ def run_rag_tests():
         print(f"[ERROR] Database similarity search failed: {e}")
         sys.exit(1)
 
+    # Login to obtain JWT
+    login_res = client.post("/api/auth/login", json={"email": "employee@gmail.com", "password": "demo1234"})
+    token = login_res.json.get("token")
+    headers = {"Authorization": f"Bearer {token}"} if token else {}
+
     # ==========================================
     # TEST 1: GROUNDED QUESTION
     # ==========================================
     print("\n[TEST 1] Asking question whose answer exists in the real document...")
     # Content in DB is "Dumm y PDF file"
     q1 = "Is this document a dummy PDF file?"
-    res1 = client.post("/api/chat", json={"question": q1})
+    res1 = client.post("/api/chat", headers=headers, json={"question": q1})
     
     if res1.status_code != 200:
         print(f"[ERROR] Chat request failed with status {res1.status_code}: {res1.json}")
@@ -135,7 +141,7 @@ def run_rag_tests():
     # ==========================================
     print("\n[TEST 2] Asking unrelated question (refusal flow)...")
     q2 = "What is the capital of France?"
-    res2 = client.post("/api/chat", json={"question": q2})
+    res2 = client.post("/api/chat", headers=headers, json={"question": q2})
     
     if res2.status_code != 200:
         print(f"[ERROR] Chat request failed with status {res2.status_code}: {res2.json}")

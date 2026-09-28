@@ -23,7 +23,7 @@ class Config:
     # Supabase Configuration
     SUPABASE_URL = os.environ.get("SUPABASE_URL")
     SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
-    SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY")
+    SUPABASE_SECRET_KEY = os.environ.get("SUPABASE_SECRET_KEY") or os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
 
     @classmethod
     def validate(cls):

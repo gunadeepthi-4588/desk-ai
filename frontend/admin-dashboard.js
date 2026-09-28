@@ -565,22 +565,19 @@ async function checkAuth() {
 
     currentUser = await res.json();
 
-    // STRICT ROLE GUARD: Allow Admin and HR/Manager roles
+    // STRICT ROLE GUARD: Admin Only
     const role = (currentUser.role || '').toLowerCase();
-    if (role !== 'admin' && role !== 'hr' && role !== 'manager') {
-      window.location.href = '/';
+    if (role !== 'admin') {
+      if (role === 'hr' || role === 'manager') {
+        window.location.href = '/hr-dashboard';
+      } else {
+        window.location.href = '/dashboard';
+      }
       return;
     }
 
     if (userDisplay) {
-      const icon = role === 'admin' ? '🛡️' : '👥';
-      userDisplay.textContent = `${icon} ${currentUser.name} (${role.toUpperCase()})`;
-    }
-
-    // If HR manager, customize page title/header if present
-    const headerTitle = document.querySelector('.admin-header h1, .dashboard-title');
-    if (headerTitle && (role === 'hr' || role === 'manager')) {
-      headerTitle.textContent = 'HR & Admin Ticket Management';
+      userDisplay.textContent = `🛡️ ${currentUser.name} (ADMIN)`;
     }
 
     fetchAdminTickets();

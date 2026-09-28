@@ -2,6 +2,7 @@ import os
 import uuid
 from flask import Blueprint, request, jsonify, g
 from werkzeug.utils import secure_filename
+from postgrest.exceptions import APIError
 from backend.supabase_client import get_supabase_client, create_private_bucket_if_not_exists
 from backend.services.pipeline import IngestionPipeline
 from backend.routes.auth import login_required, roles_required
@@ -140,6 +141,15 @@ def upload_document():
                 }
             }), 201
 
+    except APIError as e:
+        err_msg = str(e.message if hasattr(e, 'message') else e)
+        print(f"[ERROR] Database API error during upload: {err_msg}")
+        if "row-level security" in err_msg.lower() or str(getattr(e, 'code', '')) == '42501':
+            return jsonify({
+                "error": "Database RLS policy violation: Supabase RLS blocked insertion into public.documents. Please configure SUPABASE_SERVICE_ROLE_KEY in .env or apply migration 05_fix_rls_policies.sql in the Supabase SQL editor.",
+                "details": err_msg
+            }), 500
+        return jsonify({"error": f"Database error during upload: {err_msg}"}), 500
     except Exception as e:
         print(f"[ERROR] Failed to handle upload: {e}")
         return jsonify({"error": f"Upload failed: {str(e)}"}), 500

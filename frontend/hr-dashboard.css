@@ -1,0 +1,123 @@
+/* HR Dashboard Specific Styles */
+
+.hr-logo {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: #fff !important;
+}
+
+.hr-sub-brand {
+  color: #10b981 !important;
+  font-weight: 600;
+}
+
+.hr-badge {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #34d399 !important;
+}
+
+.hr-hero {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(30, 41, 59, 0.5));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 20px;
+  padding: 28px 32px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: slideUp 0.35s ease forwards;
+}
+
+.hr-role-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #34d399;
+}
+
+.hr-card-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.hr-team-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hr-team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hr-team-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hr-dept-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  transition: var(--transition-smooth);
+}
+
+.hr-dept-row:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.hr-dept-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.hr-dept-count {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-radius: 12px;
+}
+
+.hr-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .hr-card-grid {
+    grid-template-columns: 1fr;
+  }
+  .hr-actions-grid {
+    grid-template-columns: 1fr;
+  }
+  .hr-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+}

@@ -1,9 +1,10 @@
-// Employee Dashboard — Client Logic
+// HR Dashboard — Client Logic
 
 const API_BASE = '/api/tickets';
 
 // DOM Elements
 const userDisplay = document.getElementById('user-display');
+const roleDisplayPill = document.getElementById('role-display-pill');
 const logoutBtn = document.getElementById('logout-btn');
 const greetingTitle = document.getElementById('greeting-title');
 
@@ -22,6 +23,7 @@ let currentUser = null;
 
 // Utility: format relative time
 function formatDate(isoString) {
+  if (!isoString) return '-';
   const date = new Date(isoString);
   const now = new Date();
   const diffMs = now - date;
@@ -86,8 +88,8 @@ function createTicketCard(ticket) {
     </div>
     <div class="ticket-meta">
       <div class="meta-item">
-        <span class="meta-label">Dept:</span>
-        <span>${escapeHTML(ticket.department)}</span>
+        <span class="meta-label">Employee:</span>
+        <span>${escapeHTML(ticket.employee_name || ticket.employee_email || 'Employee')}</span>
       </div>
       <div class="meta-item">
         <span class="meta-label">Priority:</span>
@@ -118,30 +120,32 @@ function updateStats(tickets) {
   const inProgressCount = tickets.filter(t => t.status === 'In Progress' || t.status === 'Assigned' || t.status === 'Waiting for Employee').length;
   const resolvedCount = tickets.filter(t => t.status === 'Resolved' || t.status === 'Closed').length;
 
-  statTotal.textContent = total;
-  statOpen.textContent = openCount;
-  statInProgress.textContent = inProgressCount;
-  statResolved.textContent = resolvedCount;
+  if (statTotal) statTotal.textContent = total;
+  if (statOpen) statOpen.textContent = openCount;
+  if (statInProgress) statInProgress.textContent = inProgressCount;
+  if (statResolved) statResolved.textContent = resolvedCount;
 }
 
 // Render Recent Activity list
 function renderRecentTickets(tickets) {
-  recentLoading.classList.add('hidden');
+  if (recentLoading) recentLoading.classList.add('hidden');
 
-  if (tickets.length === 0) {
-    recentEmpty.classList.remove('hidden');
-    recentList.classList.add('hidden');
+  if (!tickets || tickets.length === 0) {
+    if (recentEmpty) recentEmpty.classList.remove('hidden');
+    if (recentList) recentList.classList.add('hidden');
     return;
   }
 
-  recentEmpty.classList.add('hidden');
-  recentList.classList.remove('hidden');
-  recentList.innerHTML = '';
+  if (recentEmpty) recentEmpty.classList.add('hidden');
+  if (recentList) {
+    recentList.classList.remove('hidden');
+    recentList.innerHTML = '';
 
-  const recent = tickets.slice(0, 3);
-  recent.forEach(ticket => {
-    recentList.appendChild(createTicketCard(ticket));
-  });
+    const recent = tickets.slice(0, 5);
+    recent.forEach(ticket => {
+      recentList.appendChild(createTicketCard(ticket));
+    });
+  }
 }
 
 // Auth Token Helper
@@ -154,14 +158,14 @@ function getAuthHeaders(customHeaders = {}) {
   return headers;
 }
 
-// Fetch tickets for current employee
+// Fetch tickets for HR
 async function loadDashboardData() {
-  recentLoading.classList.remove('hidden');
-  recentEmpty.classList.add('hidden');
-  recentList.classList.add('hidden');
+  if (recentLoading) recentLoading.classList.remove('hidden');
+  if (recentEmpty) recentEmpty.classList.add('hidden');
+  if (recentList) recentList.classList.add('hidden');
 
   try {
-    const fetchUrl = `${API_BASE}`;
+    const fetchUrl = `${API_BASE}?department=HR`;
     let response = await fetch(fetchUrl, {
       headers: getAuthHeaders()
     });
@@ -171,18 +175,28 @@ async function loadDashboardData() {
       return;
     }
 
+    if (response.status === 403) {
+      window.location.href = '/dashboard';
+      return;
+    }
+
     if (!response.ok) {
+      // Fallback: try fetching all tickets
+      response = await fetch(API_BASE, { headers: getAuthHeaders() });
+    }
+
+    if (response.ok) {
+      let data = await response.json();
+      updateStats(data);
+      renderRecentTickets(data);
+    } else {
       throw new Error(`Server returned status ${response.status}`);
     }
 
-    let data = await response.json();
-    updateStats(data);
-    renderRecentTickets(data);
-
   } catch (err) {
-    console.error('Failed to load dashboard data:', err);
-    recentLoading.classList.add('hidden');
-    recentEmpty.classList.remove('hidden');
+    console.error('Failed to load HR dashboard data:', err);
+    if (recentLoading) recentLoading.classList.add('hidden');
+    if (recentEmpty) recentEmpty.classList.remove('hidden');
   }
 }
 
@@ -198,25 +212,30 @@ async function checkAuth() {
     }
 
     currentUser = await res.json();
-
-    // If admin or HR lands on employee dashboard, redirect to their dedicated dashboard
     const role = (currentUser.role || '').toLowerCase();
-    if (role === 'admin') {
-      window.location.href = '/admin-dashboard';
-      return;
-    } else if (role === 'hr' || role === 'manager') {
-      window.location.href = '/hr-dashboard';
+
+    // STRICT ROLE GUARD: HR ONLY
+    if (role !== 'hr' && role !== 'manager') {
+      if (role === 'admin') {
+        window.location.href = '/admin-dashboard';
+      } else {
+        window.location.href = '/dashboard';
+      }
       return;
     }
 
     // Set greeting and header display
-    const firstName = currentUser.name ? currentUser.name.split(' ')[0] : 'there';
+    const firstName = currentUser.name ? currentUser.name.split(' ')[0] : 'Morgan';
     if (greetingTitle) {
-      greetingTitle.textContent = `Welcome back, ${firstName} 👋`;
+      greetingTitle.textContent = `Welcome, ${firstName} (HR Manager) 👥`;
     }
 
     if (userDisplay) {
-      userDisplay.textContent = `👤 ${currentUser.name}`;
+      userDisplay.textContent = `👥 ${currentUser.name} (HR)`;
+    }
+
+    if (roleDisplayPill) {
+      roleDisplayPill.textContent = `HR Specialist`;
     }
 
     loadDashboardData();

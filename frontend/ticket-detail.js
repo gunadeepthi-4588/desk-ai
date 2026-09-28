@@ -301,13 +301,17 @@ async function checkAuth() {
 
     // Role-dependent navigation adjustments
     if (isStaff) {
+      const isHr = (role === 'hr' || role === 'manager');
+      const targetDash = isHr ? '/hr-dashboard' : '/admin-dashboard';
+      const dashLabel = isHr ? '🏠 HR Dashboard' : '🏠 Admin Dashboard';
+      const backLabel = isHr ? '← Back to HR Dashboard' : '← Back to Admin Dashboard';
       if (backLink) {
-        backLink.href = '/admin-dashboard';
-        backLink.textContent = role === 'admin' ? '← Back to Admin Dashboard' : '← Back to HR Dashboard';
+        backLink.href = targetDash;
+        backLabel && (backLink.textContent = backLabel);
       }
       if (navDashboard) {
-        navDashboard.href = '/admin-dashboard';
-        navDashboard.textContent = role === 'admin' ? '🏠 Admin Dashboard' : '🏠 HR Dashboard';
+        navDashboard.href = targetDash;
+        dashLabel && (navDashboard.textContent = dashLabel);
       }
       if (navMyTickets) {
         navMyTickets.textContent = '🎫 All Tickets';

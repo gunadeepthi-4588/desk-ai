@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HR Dashboard - DeskAI</title>
+  <meta name="description" content="DeskAI HR Management and Employee Support Portal.">
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="tickets.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="hr-dashboard.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Premium Header -->
+    <header class="app-header">
+      <a href="/hr-dashboard" class="brand" title="DeskAI HR Console">
+        <div class="brand-logo hr-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 11C17.66 11 18.99 9.66 18.99 8C18.99 6.34 17.66 5 16 5C14.34 5 13 6.34 13 8C13 9.66 14.34 11 16 11ZM8 11C9.66 11 10.99 9.66 10.99 8C10.99 6.34 9.66 5 8 5C6.34 5 5 6.34 5 8C5 9.66 6.34 11 8 11ZM8 13C5.67 13 1 14.17 1 16.5V19H15V16.5C15 14.17 10.33 13 8 13ZM16 13C15.71 13 15.38 13.02 15.03 13.05C16.19 13.89 17 15.02 17 16.5V19H23V16.5C23 14.17 18.33 13 16 13Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>DeskAI</h1>
+          <span class="sub-brand hr-sub-brand">HR Management</span>
+        </div>
+      </a>
+      <nav class="header-nav">
+        <a href="/hr-dashboard" class="nav-link active" id="nav-dashboard">🏠 HR Dashboard</a>
+        <a href="/chat" class="nav-link" id="nav-chat">💬 Ask DeskAI</a>
+        <a href="/tickets" class="nav-link" id="nav-my-tickets">🎫 HR Tickets</a>
+      </nav>
+      <div class="user-nav">
+        <span class="user-badge hr-badge" id="user-display">👥 Loading HR...</span>
+        <button type="button" class="logout-btn" id="logout-btn" title="Sign out">Logout</button>
+      </div>
+      <div class="connection-status">
+        <span class="status-dot"></span>
+        <span class="status-text">Connected</span>
+      </div>
+    </header>
+
+    <!-- HR Dashboard Main Content -->
+    <main class="dashboard-viewport">
+      <div class="dashboard-content" style="max-width: 1080px;">
+        <!-- Hero Title Banner -->
+        <section class="hr-hero">
+          <div class="hero-text">
+            <h2 id="greeting-title" class="greeting-title">HR Operations & Overview 👥</h2>
+            <p class="greeting-subtitle">Employee relations, department support requests, and workplace assistance overview.</p>
+          </div>
+          <div class="hr-role-pill">
+            <span>🛡️ Role:</span>
+            <span id="role-display-pill">HR Specialist</span>
+          </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+          <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <div class="stat-info">
+              <span id="stat-total" class="stat-value">-</span>
+              <span class="stat-label">HR Inquiries</span>
+            </div>
+          </div>
+          <div class="stat-card stat-open">
+            <div class="stat-icon">🔵</div>
+            <div class="stat-info">
+              <span id="stat-open" class="stat-value">-</span>
+              <span class="stat-label">Open</span>
+            </div>
+          </div>
+          <div class="stat-card stat-in-progress">
+            <div class="stat-icon">🟡</div>
+            <div class="stat-info">
+              <span id="stat-in-progress" class="stat-value">-</span>
+              <span class="stat-label">In Progress</span>
+            </div>
+          </div>
+          <div class="stat-card stat-resolved">
+            <div class="stat-icon">🟢</div>
+            <div class="stat-info">
+              <span id="stat-resolved" class="stat-value">-</span>
+              <span class="stat-label">Resolved</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions-section">
+          <h3 class="section-title">HR Quick Actions</h3>
+          <div class="actions-grid hr-actions-grid">
+            <a href="/tickets" class="action-card action-tickets">
+              <div class="action-card-header">
+                <div class="action-icon">🎫</div>
+                <h4>HR Ticket Queue</h4>
+              </div>
+              <p>Review and update tickets assigned to the HR department or submitted by employees.</p>
+              <span class="action-cta">Manage Tickets →</span>
+            </a>
+
+            <a href="/chat" class="action-card action-chat">
+              <div class="action-card-header">
+                <div class="action-icon">💬</div>
+                <h4>Test DeskAI Policy Bot</h4>
+              </div>
+              <p>Verify employee self-service answers on PTO, healthcare, and onboarding policies.</p>
+              <span class="action-cta">Open Chat →</span>
+            </a>
+
+            <a href="/chat?mode=ticket" class="action-card action-raise">
+              <div class="action-card-header">
+                <div class="action-icon">📝</div>
+                <h4>Log Employee Request</h4>
+              </div>
+              <p>Create a support record on behalf of an employee or internal department inquiry.</p>
+              <span class="action-cta">Create Record →</span>
+            </a>
+          </div>
+        </section>
+
+        <!-- Two Column Layout: Recent HR Tickets + Department Snapshot -->
+        <div class="hr-card-grid">
+          <!-- Recent HR Tickets -->
+          <section class="recent-activity-section">
+            <div class="recent-header">
+              <h3 class="section-title">Recent HR Inquiries</h3>
+              <a href="/tickets" class="view-all-link">View all tickets →</a>
+            </div>
+
+            <!-- Loading State -->
+            <div id="recent-loading" class="tickets-state-card">
+              <div class="dot-flashing"></div>
+              <p>Loading HR tickets...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="recent-empty" class="tickets-state-card hidden">
+              <span class="state-icon">✅</span>
+              <p>No open HR inquiries at the moment. All caught up!</p>
+            </div>
+
+            <!-- Recent List -->
+            <div id="recent-list" class="tickets-list hidden"></div>
+          </section>
+
+          <!-- Department Overview Snapshot -->
+          <aside class="hr-team-card">
+            <div class="hr-team-header">
+              <h3 class="section-title" style="font-size: 1.05rem;">Department Snapshot</h3>
+              <span class="hr-dept-count">Active</span>
+            </div>
+            <div class="hr-team-list">
+              <div class="hr-dept-row">
+                <div class="hr-dept-name">💻 Engineering</div>
+                <span class="hr-dept-count">Active</span>
+              </div>
+              <div class="hr-dept-row">
+                <div class="hr-dept-name">👥 Human Resources</div>
+                <span class="hr-dept-count">Active</span>
+              </div>
+              <div class="hr-dept-row">
+                <div class="hr-dept-name">💰 Finance & Payroll</div>
+                <span class="hr-dept-count">Active</span>
+              </div>
+              <div class="hr-dept-row">
+                <div class="hr-dept-name">🏢 Facilities & Admin</div>
+                <span class="hr-dept-count">Active</span>
+              </div>
+              <div class="hr-dept-row">
+                <div class="hr-dept-name">🔒 Cybersecurity</div>
+                <span class="hr-dept-count">Active</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="hr-dashboard.js"></script>
+</body>
+</html>
