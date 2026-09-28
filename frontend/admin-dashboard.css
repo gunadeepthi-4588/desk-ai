@@ -357,34 +357,6 @@
     align-items: center;
     gap: 4px;
   }
-
-    display: none;
-  }
-  .admin-table, .admin-table tbody, .admin-table tr, .admin-table td {
-    display: block;
-    width: 100%;
-  }
-  .admin-table tr {
-    margin-bottom: 1rem;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 12px;
-  }
-  .admin-table td {
-    text-align: right;
-    padding-left: 45%;
-    position: relative;
-    white-space: normal;
-  }
-  .admin-table td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 12px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-align: left;
-  }
 }
 
 /* Admin update alert icons */
@@ -417,4 +389,306 @@
 .admin-update-alert.error::before {
   content: "❌";
   margin-right: 4px;
+}
+
+/* ============================================================
+   Company Knowledge Base & Document Management Section Styles
+   ============================================================ */
+.admin-knowledge-section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.section-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.knowledge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 20px;
+  margin-top: 18px;
+}
+
+.knowledge-card {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.knowledge-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-icon {
+  font-size: 1.6rem;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+
+.knowledge-card-header h4 {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.knowledge-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.baseline-badge {
+  background: rgba(34, 197, 94, 0.15);
+  color: hsl(145, 75%, 60%);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.custom-badge {
+  background: rgba(114, 92, 230, 0.15);
+  color: hsl(255, 90%, 75%);
+  border: 1px solid rgba(114, 92, 230, 0.3);
+}
+
+.knowledge-desc {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Demo Knowledge List */
+.demo-knowledge-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.demo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: var(--transition-smooth);
+}
+
+.demo-item:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(114, 92, 230, 0.3);
+}
+
+.demo-item-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.demo-item-info strong {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  display: block;
+}
+
+.demo-meta {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+}
+
+/* Doc Upload Box */
+.doc-upload-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.upload-dropzone {
+  position: relative;
+  border: 2px dashed rgba(114, 92, 230, 0.4);
+  border-radius: var(--radius-md);
+  padding: 24px 16px;
+  text-align: center;
+  background: rgba(114, 92, 230, 0.04);
+  transition: var(--transition-smooth);
+  cursor: pointer;
+}
+
+.upload-dropzone:hover,
+.upload-dropzone.dragover {
+  border-color: var(--color-accent);
+  background: rgba(114, 92, 230, 0.1);
+}
+
+.file-input-hidden {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-dropzone-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  pointer-events: none;
+}
+
+.dropzone-icon {
+  font-size: 1.8rem;
+}
+
+.dropzone-text {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.upload-action-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.doc-upload-status-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+/* Uploaded Docs List Container */
+.uploaded-docs-container {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.uploaded-docs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 6px;
+}
+
+.uploaded-docs-header h5 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.docs-state-card {
+  padding: 16px;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+}
+
+.uploaded-docs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.uploaded-doc-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: var(--transition-smooth);
+}
+
+.uploaded-doc-item:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(114, 92, 230, 0.3);
+}
+
+.uploaded-doc-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.doc-name {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.doc-meta {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.doc-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-delete-doc {
+  background: rgba(239, 68, 68, 0.1);
+  color: hsl(0, 84%, 65%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.btn-delete-doc:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .knowledge-grid {
+    grid-template-columns: 1fr;
+  }
 }

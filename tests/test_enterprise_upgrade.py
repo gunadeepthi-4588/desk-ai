@@ -263,10 +263,219 @@ def test_employee_ticket_creation_with_jwt(client, monkeypatch):
     assert res.status_code in (201, 500)
 
 
+# ==========================================
+# 4. COMPANY DOCUMENT UPLOAD & DYNAMIC RAG TESTS
+# ==========================================
+
+import io
+from unittest.mock import MagicMock
+
+def test_employee_cannot_upload_document(client):
+    """Test employees are rejected (403 Forbidden) when attempting to upload documents."""
+    login_res = client.post("/api/auth/login", json={
+        "email": "employee@gmail.com",
+        "password": "demo1234"
+    })
+    emp_token = login_res.get_json()["token"]
+
+    data = {
+        'file': (io.BytesIO(b"Test policy content"), 'company_policy.txt')
+    }
+    res = client.post(
+        "/api/documents/upload",
+        headers={"Authorization": f"Bearer {emp_token}"},
+        data=data,
+        content_type='multipart/form-data'
+    )
+    assert res.status_code == 403
+    assert "forbidden" in res.get_json().get("error", "").lower()
+
+
+def test_hr_can_upload_document(client, monkeypatch):
+    """Test HR/Admin can successfully upload a document and kick off ingestion."""
+    # Mock supabase client and pipeline
+    mock_supabase = MagicMock()
+    mock_supabase.storage.from_.return_value.upload.return_value = {"Key": "uploads/mock.txt"}
+    mock_supabase.table.return_value.insert.return_value.execute.return_value = MagicMock(
+        data=[{"id": "00000000-0000-0000-0000-000000000099", "filename": "TestCompany_Policy.txt"}]
+    )
+    
+    from backend.routes import ingestion as ingestion_module
+    monkeypatch.setattr(ingestion_module, "get_supabase_client", lambda: mock_supabase)
+
+    login_res = client.post("/api/auth/login", json={
+        "email": "hr@gmail.com",
+        "password": "demo1234"
+    })
+    hr_token = login_res.get_json()["token"]
+
+    data = {
+        'file': (io.BytesIO(b"Employees receive 21 annual leave days per year."), 'TestCompany_Policy.txt')
+    }
+    res = client.post(
+        "/api/documents/upload",
+        headers={"Authorization": f"Bearer {hr_token}"},
+        data=data,
+        content_type='multipart/form-data'
+    )
+    assert res.status_code == 201
+    res_data = res.get_json()
+    assert "document" in res_data
+    assert res_data["document"]["filename"] == "TestCompany_Policy.txt"
+
+
+def test_empty_document_upload_rejected(client, monkeypatch):
+    """Test documents with no extractable text are rejected."""
+    mock_supabase = MagicMock()
+    mock_supabase.storage.from_.return_value.upload.return_value = {"Key": "uploads/empty.txt"}
+    mock_supabase.table.return_value.insert.return_value.execute.return_value = MagicMock(
+        data=[{"id": "00000000-0000-0000-0000-000000000098", "filename": "empty.txt"}]
+    )
+    mock_supabase.table.return_value.update.return_value.eq.return_value.execute.return_value = MagicMock(data=[])
+    
+    from backend.routes import ingestion as ingestion_module
+    from backend.services import pipeline as pipeline_module
+    monkeypatch.setattr(ingestion_module, "get_supabase_client", lambda: mock_supabase)
+    monkeypatch.setattr(pipeline_module, "get_supabase_client", lambda: mock_supabase)
+
+    login_res = client.post("/api/auth/login", json={
+        "email": "admin@gmail.com",
+        "password": "demo1234"
+    })
+    admin_token = login_res.get_json()["token"]
+
+    data = {
+        'file': (io.BytesIO(b"   \n\n   "), 'empty.txt')
+    }
+    res = client.post(
+        "/api/documents/upload?sync=true",
+        headers={"Authorization": f"Bearer {admin_token}"},
+        data=data,
+        content_type='multipart/form-data'
+    )
+    assert res.status_code == 400
+    assert "no extractable text" in res.get_json().get("error", "").lower()
+
+
+def test_additive_rag_both_demo_and_new_knowledge(client, monkeypatch):
+    """
+    Test that RAG seamlessly serves both:
+    1. Existing demo knowledge (e.g. Leave Policy)
+    2. Newly uploaded company document (e.g. TestCompany_Policy.pdf)
+    at the same time without losing existing knowledge.
+    """
+    from backend.routes import chat as chat_module
+
+    # Mock RAG answer to simulate retrieval from both datasets
+    def mock_answer_question(q):
+        q_lower = q.lower()
+        if "annual leave allowance" in q_lower or "21 days" in q_lower:
+            # Query against newly uploaded document
+            return {
+                "answer": "Employees receive 21 annual leave days per year.",
+                "sources": [
+                    {
+                        "document_id": "00000000-0000-0000-0000-000000000099",
+                        "filename": "TestCompany_Policy.pdf",
+                        "page_number": 1,
+                        "similarity": 0.92
+                    }
+                ],
+                "is_answerable": True
+            }
+        elif "work from home" in q_lower or "core hours" in q_lower:
+            # Query against existing demo knowledge
+            return {
+                "answer": "Standard core working hours are 10:00 AM to 4:00 PM with hybrid flexibility.",
+                "sources": [
+                    {
+                        "document_id": "00000000-0000-0000-0000-000000000001",
+                        "filename": "employee_handbook.txt",
+                        "page_number": 1,
+                        "similarity": 0.88
+                    }
+                ],
+                "is_answerable": True
+            }
+        else:
+            return {
+                "answer": "I couldn't find reliable information about this in the available company knowledge.",
+                "sources": [],
+                "is_answerable": False
+            }
+
+    monkeypatch.setattr(chat_module.rag_service, "answer_question", mock_answer_question)
+
+    login_res = client.post("/api/auth/login", json={
+        "email": "employee@gmail.com",
+        "password": "demo1234"
+    })
+    emp_token = login_res.get_json()["token"]
+
+    # Test 1: Query from Newly Uploaded Document
+    res_new = client.post(
+        "/api/chat",
+        headers={"Authorization": f"Bearer {emp_token}"},
+        json={"question": "What is the annual leave allowance?"}
+    )
+    assert res_new.status_code == 200
+    data_new = res_new.get_json()
+    assert data_new["resolved_via_ai"] is True
+    assert "21 annual leave days" in data_new["answer"]
+    assert data_new["sources"][0]["filename"] == "TestCompany_Policy.pdf"
+
+    # Test 2: Query from Existing Demo Knowledge
+    res_demo = client.post(
+        "/api/chat",
+        headers={"Authorization": f"Bearer {emp_token}"},
+        json={"question": "What are the core hours for work from home?"}
+    )
+    assert res_demo.status_code == 200
+    data_demo = res_demo.get_json()
+    assert data_demo["resolved_via_ai"] is True
+    assert "core working hours" in data_demo["answer"]
+    assert data_demo["sources"][0]["filename"] == "employee_handbook.txt"
+
+
+def test_document_deletion_rbac(client, monkeypatch):
+    """Test HR/Admin can delete uploaded documents, but employees cannot."""
+    mock_supabase = MagicMock()
+    mock_supabase.table.return_value.select.return_value.eq.return_value.execute.return_value = MagicMock(
+        data=[{"id": "00000000-0000-0000-0000-000000000099", "filename": "TestCompany_Policy.pdf", "storage_path": "uploads/mock.pdf"}]
+    )
+    mock_supabase.table.return_value.delete.return_value.eq.return_value.execute.return_value = MagicMock(data=[])
+    mock_supabase.storage.from_.return_value.remove.return_value = []
+    
+    from backend.routes import ingestion as ingestion_module
+    monkeypatch.setattr(ingestion_module, "get_supabase_client", lambda: mock_supabase)
+
+    # 1. Employee attempt -> 403 Forbidden
+    emp_login = client.post("/api/auth/login", json={"email": "employee@gmail.com", "password": "demo1234"})
+    emp_token = emp_login.get_json()["token"]
+
+    del_res_emp = client.delete(
+        "/api/documents/00000000-0000-0000-0000-000000000099",
+        headers={"Authorization": f"Bearer {emp_token}"}
+    )
+    assert del_res_emp.status_code == 403
+
+    # 2. Admin attempt -> 200 Success
+    admin_login = client.post("/api/auth/login", json={"email": "admin@gmail.com", "password": "demo1234"})
+    admin_token = admin_login.get_json()["token"]
+
+    del_res_admin = client.delete(
+        "/api/documents/00000000-0000-0000-0000-000000000099",
+        headers={"Authorization": f"Bearer {admin_token}"}
+    )
+    assert del_res_admin.status_code == 200
+    assert "deleted successfully" in del_res_admin.get_json()["message"]
+
+
 def test_static_pages_healthy(client):
     """Regression test: verify all main DeskAI pages load successfully."""
     pages = ["/", "/dashboard", "/chat", "/tickets", "/login", "/admin-dashboard", "/ticket-detail"]
     for path in pages:
         res = client.get(path)
         assert res.status_code == 200, f"Page {path} failed to load."
+
 

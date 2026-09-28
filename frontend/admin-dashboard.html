@@ -127,6 +127,134 @@
           </div>
         </section>
 
+        <!-- Company Knowledge Base & Document Management Section -->
+        <section class="admin-knowledge-section">
+          <div class="admin-section-header">
+            <div class="section-title-wrapper">
+              <h3 class="section-title">📚 Company Knowledge Base & Dynamic RAG</h3>
+              <span class="ticket-count-badge">Additive Ingestion</span>
+            </div>
+            <p class="section-subtitle">Manage company documents. Uploaded documents are automatically chunked, embedded, and indexed in Supabase pgvector alongside preloaded demo knowledge.</p>
+          </div>
+
+          <div class="knowledge-grid">
+            <!-- Sub-card 1: Existing Demo Knowledge (Permanent) -->
+            <div class="knowledge-card baseline-knowledge">
+              <div class="knowledge-card-header">
+                <div class="card-icon">🏛️</div>
+                <div>
+                  <h4>Existing Demo Knowledge</h4>
+                  <span class="knowledge-badge baseline-badge">✓ Permanent Base Knowledge</span>
+                </div>
+              </div>
+              <p class="knowledge-desc">Core enterprise policies available by default to all employees for instant testing.</p>
+              
+              <ul class="demo-knowledge-list">
+                <li class="demo-item">
+                  <div class="demo-item-info">
+                    <span class="demo-icon">📄</span>
+                    <div>
+                      <strong>HR Leave Policy</strong>
+                      <span class="demo-meta">HR Department • 25 Annual Days • Sick & Parental Leave</span>
+                    </div>
+                  </div>
+                  <span class="status-badge status-resolved">✓ Active</span>
+                </li>
+                <li class="demo-item">
+                  <div class="demo-item-info">
+                    <span class="demo-icon">📄</span>
+                    <div>
+                      <strong>Employee Handbook & WFH Policy</strong>
+                      <span class="demo-meta">HR Department • Remote Work & Core Hours</span>
+                    </div>
+                  </div>
+                  <span class="status-badge status-resolved">✓ Active</span>
+                </li>
+                <li class="demo-item">
+                  <div class="demo-item-info">
+                    <span class="demo-icon">📄</span>
+                    <div>
+                      <strong>IT Support & VPN Setup</strong>
+                      <span class="demo-meta">IT Support • Hardware, MFA, Software & Network</span>
+                    </div>
+                  </div>
+                  <span class="status-badge status-resolved">✓ Active</span>
+                </li>
+                <li class="demo-item">
+                  <div class="demo-item-info">
+                    <span class="demo-icon">📄</span>
+                    <div>
+                      <strong>Cybersecurity & Access Protocols</strong>
+                      <span class="demo-meta">Cybersecurity • Phishing, Passwords & Incident Response</span>
+                    </div>
+                  </div>
+                  <span class="status-badge status-resolved">✓ Active</span>
+                </li>
+                <li class="demo-item">
+                  <div class="demo-item-info">
+                    <span class="demo-icon">📄</span>
+                    <div>
+                      <strong>Office & Finance Guidelines</strong>
+                      <span class="demo-meta">Finance & Facilities • Reimbursements & Travel</span>
+                    </div>
+                  </div>
+                  <span class="status-badge status-resolved">✓ Active</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Sub-card 2: Uploaded Company Documents -->
+            <div class="knowledge-card upload-knowledge">
+              <div class="knowledge-card-header">
+                <div class="card-icon">🚀</div>
+                <div>
+                  <h4>Uploaded Company Documents</h4>
+                  <span class="knowledge-badge custom-badge">Dynamic RAG Ingestion</span>
+                </div>
+              </div>
+              <p class="knowledge-desc">Upload custom PDFs, DOCXs, or TXT policies. They are dynamically embedded and searched alongside demo knowledge.</p>
+
+              <!-- Upload Form -->
+              <form id="doc-upload-form" class="doc-upload-box">
+                <div class="upload-dropzone" id="upload-dropzone">
+                  <input type="file" id="doc-file-input" accept=".pdf,.docx,.txt" class="file-input-hidden">
+                  <label for="doc-file-input" class="upload-dropzone-label">
+                    <span class="dropzone-icon">📁</span>
+                    <span class="dropzone-text" id="dropzone-text">Click or drag & drop PDF, DOCX, or TXT (Max 10MB)</span>
+                  </label>
+                </div>
+                <div class="upload-action-row">
+                  <button type="submit" id="doc-upload-btn" class="btn btn-primary" disabled>
+                    ⬆️ Upload & Process for AI
+                  </button>
+                  <span id="doc-upload-status" class="doc-upload-status-text"></span>
+                </div>
+              </form>
+
+              <!-- Uploaded Documents List Container -->
+              <div class="uploaded-docs-container">
+                <div class="uploaded-docs-header">
+                  <h5>Ingested Company Files</h5>
+                  <button id="refresh-docs-btn" class="btn btn-secondary btn-sm" title="Refresh uploaded documents">🔄</button>
+                </div>
+
+                <div id="docs-loading" class="docs-state-card hidden">
+                  <div class="dot-flashing"></div>
+                  <p>Loading company documents...</p>
+                </div>
+
+                <div id="docs-empty" class="docs-state-card">
+                  <p>No custom documents uploaded yet. Upload your first company file above!</p>
+                </div>
+
+                <div id="docs-list" class="uploaded-docs-list hidden">
+                  <!-- Dynamically rendered uploaded document items -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Tickets Management Section -->
         <section class="admin-tickets-section">
           <div class="admin-section-header">

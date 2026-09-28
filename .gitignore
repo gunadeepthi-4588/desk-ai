@@ -10,3 +10,5 @@ uploads/
 .pytest_cache/
 .vscode/
 .idea/
+
+.vercel

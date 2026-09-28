@@ -44,9 +44,23 @@ const adminEmptyResetBtn = document.getElementById('admin-empty-reset-btn');
 const adminTableContainer = document.getElementById('admin-table-container');
 const adminCardsContainer = document.getElementById('admin-cards-container');
 const adminTicketsTbody = document.getElementById('admin-tickets-tbody');
+const adminUpdateAlert = document.getElementById('admin-update-alert');
+
+// Document Management DOM Elements
+const docUploadForm = document.getElementById('doc-upload-form');
+const docFileInput = document.getElementById('doc-file-input');
+const uploadDropzone = document.getElementById('upload-dropzone');
+const dropzoneText = document.getElementById('dropzone-text');
+const docUploadBtn = document.getElementById('doc-upload-btn');
+const docUploadStatus = document.getElementById('doc-upload-status');
+const refreshDocsBtn = document.getElementById('refresh-docs-btn');
+const docsLoading = document.getElementById('docs-loading');
+const docsEmpty = document.getElementById('docs-empty');
+const docsList = document.getElementById('docs-list');
 
 // Global State
 let allTickets = [];
+let uploadedDocuments = [];
 let currentUser = null;
 let lastFiltered = [];
 // Utility: format relative date/time
@@ -350,6 +364,194 @@ function resetFilters() {
   renderFilteredTickets();
 }
 
+// Format file size in KB or MB
+function formatFileSize(bytes) {
+  if (!bytes || bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+// Render uploaded documents list
+function renderUploadedDocuments(docs) {
+  if (!docsList || !docsEmpty || !docsLoading) return;
+
+  docsLoading.classList.add('hidden');
+
+  if (!docs || docs.length === 0) {
+    docsEmpty.classList.remove('hidden');
+    docsList.classList.add('hidden');
+    return;
+  }
+
+  docsEmpty.classList.add('hidden');
+  docsList.innerHTML = '';
+
+  docs.forEach(doc => {
+    const item = document.createElement('div');
+    item.className = 'uploaded-doc-item';
+    
+    // Status Badge calculation
+    let statusPill = '';
+    const status = (doc.status || 'pending').toLowerCase();
+    if (status === 'completed') {
+      statusPill = `<span class="status-badge status-resolved">✓ Ready for AI (${doc.chunk_count || 0} chunks)</span>`;
+    } else if (status === 'processing' || status === 'pending') {
+      statusPill = `<span class="status-badge status-in-progress">⏳ Processing...</span>`;
+    } else {
+      statusPill = `<span class="status-badge status-open">❌ Failed</span>`;
+    }
+
+    item.innerHTML = `
+      <div class="uploaded-doc-info">
+        <span class="demo-icon">📄</span>
+        <div>
+          <div class="doc-name" title="${escapeHTML(doc.filename)}">${escapeHTML(doc.filename)}</div>
+          <div class="doc-meta">${formatFileSize(doc.file_size)} • ${formatDate(doc.created_at)}</div>
+        </div>
+      </div>
+      <div class="doc-actions">
+        ${statusPill}
+        <button type="button" class="btn-delete-doc" data-doc-id="${escapeHTML(doc.id)}" data-doc-name="${escapeHTML(doc.filename)}" title="Delete document from knowledge base">🗑️ Delete</button>
+      </div>
+    `;
+
+    // Bind delete click
+    const deleteBtn = item.querySelector('.btn-delete-doc');
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = deleteBtn.getAttribute('data-doc-id');
+        const name = deleteBtn.getAttribute('data-doc-name');
+        handleDocDelete(id, name);
+      });
+    }
+
+    docsList.appendChild(item);
+  });
+
+  docsList.classList.remove('hidden');
+}
+
+// Fetch all uploaded company documents
+async function fetchUploadedDocuments() {
+  if (docsLoading) docsLoading.classList.remove('hidden');
+  if (docsEmpty) docsEmpty.classList.add('hidden');
+  if (docsList) docsList.classList.add('hidden');
+
+  try {
+    const res = await fetch('/api/documents', {
+      headers: getAuthHeaders()
+    });
+
+    if (res.status === 401) {
+      window.location.href = '/login';
+      return;
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch documents: ${res.status}`);
+    }
+
+    const data = await res.json();
+    uploadedDocuments = Array.isArray(data) ? data : [];
+    renderUploadedDocuments(uploadedDocuments);
+
+  } catch (err) {
+    console.error('Failed to fetch documents:', err);
+    if (docsLoading) docsLoading.classList.add('hidden');
+    if (docsEmpty) {
+      docsEmpty.textContent = `Error loading documents: ${err.message}`;
+      docsEmpty.classList.remove('hidden');
+    }
+  }
+}
+
+// Handle Document Upload
+async function handleDocUpload(e) {
+  if (e) e.preventDefault();
+  
+  if (!docFileInput || !docFileInput.files || docFileInput.files.length === 0) {
+    showAdminAlert('Please select a file to upload.', 'error');
+    return;
+  }
+
+  const file = docFileInput.files[0];
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('sync', 'true'); // Immediate RAG indexing for instant searchability
+
+  if (docUploadBtn) {
+    docUploadBtn.disabled = true;
+    docUploadBtn.textContent = '⏳ Processing & Generating Embeddings...';
+  }
+  if (docUploadStatus) {
+    docUploadStatus.textContent = `Uploading "${file.name}"...`;
+  }
+
+  try {
+    const res = await fetch('/api/documents/upload?sync=true', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: formData
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      throw new Error(result.error || `Upload failed with status ${res.status}`);
+    }
+
+    showAdminAlert(`✓ "${file.name}" processed and indexed into company knowledge base!`, 'success');
+    
+    // Reset file input
+    if (docFileInput) docFileInput.value = '';
+    if (dropzoneText) dropzoneText.textContent = 'Click or drag & drop PDF, DOCX, or TXT (Max 10MB)';
+    if (docUploadStatus) docUploadStatus.textContent = 'Upload complete.';
+
+    // Refresh documents list
+    await fetchUploadedDocuments();
+
+  } catch (err) {
+    console.error('Doc upload failed:', err);
+    showAdminAlert(`Upload failed: ${err.message}`, 'error');
+    if (docUploadStatus) docUploadStatus.textContent = `Error: ${err.message}`;
+  } finally {
+    if (docUploadBtn) {
+      docUploadBtn.disabled = false;
+      docUploadBtn.textContent = '⬆️ Upload & Process for AI';
+    }
+  }
+}
+
+// Handle Document Deletion
+async function handleDocDelete(docId, docName) {
+  if (!confirm(`Are you sure you want to delete "${docName}" from the company knowledge base? Its vector embeddings will be removed.`)) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/documents/${docId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      throw new Error(result.error || `Delete failed with status ${res.status}`);
+    }
+
+    showAdminAlert(`✓ Document "${docName}" deleted successfully.`, 'success');
+    await fetchUploadedDocuments();
+
+  } catch (err) {
+    console.error('Failed to delete document:', err);
+    showAdminAlert(`Delete failed: ${err.message}`, 'error');
+  }
+}
+
 // Auth Verification and Role Guard
 async function checkAuth() {
   try {
@@ -382,6 +584,7 @@ async function checkAuth() {
     }
 
     fetchAdminTickets();
+    fetchUploadedDocuments();
 
   } catch (err) {
     console.error('Auth verification failed:', err);
@@ -404,7 +607,54 @@ if (logoutBtn) {
   });
 }
 
-// Event Listeners
+// Document Upload Listeners
+if (docFileInput) {
+  docFileInput.addEventListener('change', () => {
+    if (docFileInput.files && docFileInput.files.length > 0) {
+      const file = docFileInput.files[0];
+      if (dropzoneText) dropzoneText.textContent = `Selected: ${file.name} (${formatFileSize(file.size)})`;
+      if (docUploadBtn) docUploadBtn.disabled = false;
+    }
+  });
+}
+
+if (docUploadForm) {
+  docUploadForm.addEventListener('submit', handleDocUpload);
+}
+
+if (refreshDocsBtn) {
+  refreshDocsBtn.addEventListener('click', fetchUploadedDocuments);
+}
+
+// Drag & drop on dropzone
+if (uploadDropzone) {
+  ['dragenter', 'dragover'].forEach(eventName => {
+    uploadDropzone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadDropzone.classList.add('dragover');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    uploadDropzone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadDropzone.classList.remove('dragover');
+    });
+  });
+
+  uploadDropzone.addEventListener('drop', (e) => {
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      docFileInput.files = e.dataTransfer.files;
+      const file = docFileInput.files[0];
+      if (dropzoneText) dropzoneText.textContent = `Selected: ${file.name} (${formatFileSize(file.size)})`;
+      if (docUploadBtn) docUploadBtn.disabled = false;
+    }
+  });
+}
+
+// Event Listeners for Tickets & Filters
 searchInput.addEventListener('input', renderFilteredTickets);
 filterDept.addEventListener('change', renderFilteredTickets);
 filterStatus.addEventListener('change', renderFilteredTickets);
@@ -413,6 +663,7 @@ resetFiltersBtn.addEventListener('click', resetFilters);
 adminEmptyResetBtn.addEventListener('click', resetFilters);
 adminRetryBtn.addEventListener('click', fetchAdminTickets);
 refreshBtn.addEventListener('click', fetchAdminTickets);
+
 // Update view mode on window resize
 window.addEventListener('resize', () => {
   updateViewMode(lastFiltered);
@@ -420,3 +671,4 @@ window.addEventListener('resize', () => {
 
 // Initial auth check
 checkAuth();
+
